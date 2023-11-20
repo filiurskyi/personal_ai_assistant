@@ -12,12 +12,10 @@ from aiogram.types import Message
 
 from handlers import user_commands
 
-# Bot token can be obtained via https://t.me/BotFather
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
 
-# All handlers should be attached to the Router (or Dispatcher)
 dp = Dispatcher()
 
 
