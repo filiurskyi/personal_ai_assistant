@@ -30,6 +30,7 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
     """
     This handler receives messages with `/start` command
     """
+    
     keyboard = await kb.keyboard_selector(state)
     await message.answer(
         f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
