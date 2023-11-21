@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.markdown import hbold
 from logic.states import States
 import keyboards.kb as kb
+from logic import aichat as gpt
 
 # from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
 
@@ -23,6 +24,21 @@ async def ask_for_date_handler(message: types.Message, state: FSMContext) -> Non
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     await message.answer("Enter Event Date!", reply_markup=keyboard)
+
+
+
+@router.message(F.text == "Show all events")
+async def show_all_events_handler(message: Message, state: FSMContext) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    answer = gpt.simplequery()
+    await message.answer(answer, reply_markup=keyboard)
+
+
+@router.message(F.voice)
+async def voice_messages_handler(message: Message, state: FSMContext) -> None:
+    answer = gpt.voice_to_text(message.voice)
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer(answer, reply_markup=keyboard)    
 
 
 @router.message(Command("start"))
