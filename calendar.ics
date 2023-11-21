@@ -1,0 +1,12 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:ics.py - http://git.io/lLljaA
+BEGIN:VEVENT
+DESCRIPTION:Discuss project updates and goals.
+DTEND:20230101T130000Z
+LOCATION:Conference Room 123
+DTSTART:20230101T120000Z
+SUMMARY:Meeting with Client
+UID:f3e0ea84-4bd6-4391-a997-c4843e64bf09@f3e0.org
+END:VEVENT
+END:VCALENDAR
