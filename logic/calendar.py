@@ -1,5 +1,6 @@
 from ics import Calendar, Event
 
+
 def generate_ics_file():
     # Create a Calendar
     cal = Calendar()
