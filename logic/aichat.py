@@ -1,6 +1,12 @@
 from openai import OpenAI
 client = OpenAI()
 
+# # Use a pipeline as a high-level helper
+# from transformers import pipeline
+
+# pipe = pipeline("text-generation", model="MayaPH/GodziLLa2-70B")
+
+
 def simplequery():
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
