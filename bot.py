@@ -15,7 +15,7 @@ from handlers import user_commands
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
-PG_PWD = getenv("PGPWD")
+# PG_PWD = getenv("PG_PWD")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
 bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
@@ -33,7 +33,6 @@ async def on_startup() -> None:
 
 
 async def main() -> None:
-
     dp.include_routers(user_commands.router)
     dp.startup.register(on_startup)
     await dp.start_polling(bot)

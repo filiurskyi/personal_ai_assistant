@@ -1,17 +1,19 @@
 from openai import OpenAI
 from bot import OPENAI_API_KEY
 import logging
+
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 def simple_query(user_query):
-    logging.info(f"AI query received: {user_query}")
+    logging.debug(f"AI query received: {user_query}")
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
-                "content": "You are a personal assistant, skilled in life planning and personal improvements.",
+                "content": "You are a personal assistant, skilled in life planning, calendar management\
+                and personal improvements.",
             },
             {
                 "role": "user",

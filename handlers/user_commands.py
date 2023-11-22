@@ -1,13 +1,15 @@
 import logging
+import uuid
 
 from aiogram import Router, F, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile
 from aiogram.utils.markdown import hbold
+
 # from datetime import datetime
 
-import io
+import os
 
 import keyboards.kb as kb
 from logic import aichat as gpt
@@ -55,25 +57,16 @@ async def show_all_events_handler(message: Message, state: FSMContext) -> None:
     await message.answer("running AI request", reply_markup=keyboard)
 
 
-@router.message(F.text)
-async def show_all_events_handler(message: Message, state: FSMContext) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer("running AI request")
-    answer = gpt.simple_query(message.text)
-    await message.answer(answer, reply_markup=keyboard)
-
-
 @router.message(F.voice)
 async def voice_messages_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    file = await bot.get_file(message.voice.file_id)
-    file_path = file.file_path
-    logging.info(f"File path received: {file_path}")
-    res: io.BytesIO = await bot.download_file(file_path)
-    result = res.getvalue()
-    logging.info(f"File res : {result}")
-    answer = gpt.voice_to_text(result)
+    file_id = await bot.get_file(message.voice.file_id)
+    filename = f"./temp/{uuid.uuid4().int}.oga"
+    res = await bot.download_file(file_id.file_path, filename)
+    audio = open(filename, "rb")
+    answer = gpt.voice_to_text(audio)
     await message.answer(answer, reply_markup=keyboard)
+    # os.remove(filename)
 
 
 @router.message(Command("start"))
@@ -86,3 +79,11 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
     await message.answer(
         f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
     )
+
+
+@router.message(F.text)
+async def show_all_events_handler(message: Message, state: FSMContext) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("running AI request")
+    answer = gpt.simple_query(message.text)
+    await message.answer(answer, reply_markup=keyboard)
