@@ -1,35 +1,28 @@
 from openai import OpenAI
-from dotenv import load_dotenv
-from os import getenv
-
-load_dotenv()
-OPENAI_API_KEY = getenv("OPENAI_API_KEY")
-
-client = OpenAI()
-
-# # Use a pipeline as a high-level helper
-# from transformers import pipeline
-
-# pipe = pipeline("text-generation", model="MayaPH/GodziLLa2-70B")
+from bot import OPENAI_API_KEY
+import logging
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 
-def simple_query():
+def simple_query(user_query):
+    logging.info(f"AI query received: {user_query}")
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
-                "content": "You are a poetic assistant, skilled in explaining complex programming concepts with creative flair.",
+                "content": "You are a personal assistant, skilled in life planning and personal improvements.",
             },
             {
                 "role": "user",
-                "content": "Compose a poem that explains the concept of recursion in programming.",
+                "content": user_query,
             },
         ],
     )
-    return completion.choices[0].message
+    reply_text = completion.choices[0].message.content
+    return reply_text
 
 
 def voice_to_text(audio):
     transcript = client.audio.transcriptions.create(model="whisper-1", file=audio)
-    return transcript
+    return transcript.text

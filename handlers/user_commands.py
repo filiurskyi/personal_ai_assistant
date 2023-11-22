@@ -5,14 +5,16 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile
 from aiogram.utils.markdown import hbold
+# from datetime import datetime
+
+import io
 
 import keyboards.kb as kb
 from logic import aichat as gpt
-# from datetime import datetime
 from logic.calendar import generate_ics_file
 from logic.states import States
+from bot import bot
 
-# from aiogram.types import Message, ReplyKeyboardRemove, FSInputFile
 router = Router()
 
 
@@ -51,17 +53,26 @@ async def ask_for_date_handler(message: types.Message, state: FSMContext) -> Non
 async def show_all_events_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     await message.answer("running AI request", reply_markup=keyboard)
-    answer = gpt.simple_query()
-    # answer = "simple answer"
-    logging.info(answer)
-    await message.answer("done", reply_markup=keyboard)
+
+
+@router.message(F.text)
+async def show_all_events_handler(message: Message, state: FSMContext) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("running AI request")
+    answer = gpt.simple_query(message.text)
+    await message.answer(answer, reply_markup=keyboard)
 
 
 @router.message(F.voice)
 async def voice_messages_handler(message: Message, state: FSMContext) -> None:
-    # answer = gpt.voice_to_text(message.voice)
-    answer = "simple answer2"
     keyboard = await kb.keyboard_selector(state)
+    file = await bot.get_file(message.voice.file_id)
+    file_path = file.file_path
+    logging.info(f"File path received: {file_path}")
+    res: io.BytesIO = await bot.download_file(file_path)
+    result = res.getvalue()
+    logging.info(f"File res : {result}")
+    answer = gpt.voice_to_text(result)
     await message.answer(answer, reply_markup=keyboard)
 
 

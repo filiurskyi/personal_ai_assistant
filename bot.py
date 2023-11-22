@@ -15,6 +15,10 @@ from handlers import user_commands
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
+PG_PWD = getenv("PGPWD")
+OPENAI_API_KEY = getenv("OPENAI_API_KEY")
+
+bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 
 dp = Dispatcher()
 
@@ -29,7 +33,6 @@ async def on_startup() -> None:
 
 
 async def main() -> None:
-    bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 
     dp.include_routers(user_commands.router)
     dp.startup.register(on_startup)
