@@ -76,7 +76,7 @@ async def command_start_handler(message: Message, state: FSMContext, session) ->
     This handler receives messages with `/start` command
     """
     keyboard = await kb.keyboard_selector(state)
-    if await db.old_user_check(session, message.from_user.id):
+    if not await db.old_user_check(session, message.from_user.id):
         await message.answer(
             f"Welcome back, {hbold(message.from_user.full_name)}!\nServer has been updated",
             reply_markup=keyboard,

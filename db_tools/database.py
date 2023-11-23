@@ -1,26 +1,28 @@
-from datetime import datetime
+# from datetime import datetime
+
 from sqlalchemy import select
+
 from db_tools.models import Base, Event, Setting, User
-import logging
 
 
 async def old_user_check(session, tg_id) -> bool:
-    user_id = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    logging.info("---------------------USER_ID------------------------- = ", user_id)
-    if  not user_id:
+    """returns False if user exists"""
+    res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar()
+    if user_id:
         return False
     return True
 
 
 async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
-    # user_id = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    # if not user_id:
-    #     user = User(
-    #         user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
-    #     )
-    #     session.add(user)
-    #     session.commit()
-    pass
+    res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar()
+    if not user_id:
+        user = User(
+            user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
+        )
+        session.add(user)
+        await session.commit()
 
 
 # if __name__ == "__main__":

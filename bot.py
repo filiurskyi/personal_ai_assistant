@@ -11,7 +11,8 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from handlers import user_commands
 from middlewares.db import DbSessionMiddleware
-from db_tools.models import Base
+
+# from db_tools.models import Base
 
 load_dotenv()
 
@@ -19,11 +20,12 @@ TOKEN = getenv("BOT_TOKEN")
 # PG_PWD = getenv("PG_PWD")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
-def database_init(engine) -> None:
-    Base.metadata.create_all(bind=engine)
+# def database_init(engine) -> None:
+#     Base.metadata.create_all(bind=engine)
+
 
 async def main() -> None:
-    engine = create_async_engine("sqlite+aiosqlite:///database.db", echo=True)
+    engine = create_async_engine("sqlite+aiosqlite:///database.db/", echo=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
