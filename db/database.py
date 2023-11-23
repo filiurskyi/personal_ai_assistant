@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker
 from datetime import datetime
-from models import Base, User, Event, Setting
+
+from models import Base, Event, Setting, User
+from sqlalchemy import MetaData, create_engine
+from sqlalchemy.orm import sessionmaker
 
 # from bot import PG_PWD
 

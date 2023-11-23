@@ -1,21 +1,22 @@
 import logging
+import os
 import uuid
 
-from aiogram import Router, F, types
+from aiogram import F, Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, FSInputFile
+from aiogram.types import FSInputFile, Message
 from aiogram.utils.markdown import hbold
 
-# from datetime import datetime
-
-import os
-
 import keyboards.kb as kb
+from bot import bot
 from logic import aichat as gpt
 from logic.calendar import generate_ics_file
 from logic.states import States
-from bot import bot
+
+# from datetime import datetime
+
+
 
 router = Router()
 

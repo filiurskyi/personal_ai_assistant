@@ -2,13 +2,13 @@
 import asyncio
 import logging
 import sys
-from dotenv import load_dotenv
 from os import getenv
 
 from aiogram import Bot, Dispatcher  # , Router, types
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
+from dotenv import load_dotenv
 
 from handlers import user_commands
 

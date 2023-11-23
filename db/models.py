@@ -1,15 +1,8 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    SmallInteger,
-    Time,  # is datetime.time()
-    Text,  # variable length
-    Date,  # is datetime.date()
-    String,
-    ForeignKey,
-)
+from sqlalchemy import Date  # is datetime.date()
+from sqlalchemy import Text  # variable length
+from sqlalchemy import Time  # is datetime.time()
+from sqlalchemy import Column, ForeignKey, Integer, SmallInteger, String
 from sqlalchemy.orm import declarative_base, relationship
-
 
 Base = declarative_base()
 

@@ -1,6 +1,8 @@
-from openai import OpenAI
-from bot import OPENAI_API_KEY
 import logging
+
+from openai import OpenAI
+
+from bot import OPENAI_API_KEY
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
