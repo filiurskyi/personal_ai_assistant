@@ -8,7 +8,7 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 def simple_query(user_query):
     logging.debug(f"AI query received: {user_query}")
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=[
             {
                 "role": "system",
