@@ -1,8 +1,7 @@
-from datetime import datetime
-
+import arrow
 from sqlalchemy import select
 
-from db_tools.models import Base, Event, Setting, User
+from db_tools.models import Event, User
 
 
 async def old_user_check(session, tg_id) -> bool:
@@ -26,20 +25,26 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
 
 
 async def add_event(session, tg_id, event_dict: dict) -> None:
+    # user_tg_id
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
-    date_time_str = f"{event_dict.get('ev_date')} {event_dict.get('ev_time')}"
-    date_time_format = "%d.%m.%Y %H:%M"
+
+    # ev_datetime
+    user_default_tz = "Europe/Berlin"
+    date_time_format = "DD.MM.YYYY HH:mm"
+    date_time_str = event_dict.get('ev_datetime')
+    arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_default_tz).to("UTC")
+
     event = Event(
         user_tg_id=user_id,
-        ev_date=datetime.strptime(date_time_str, date_time_format).date(),
-        ev_time=datetime.strptime(date_time_str, date_time_format).time(),
+        ev_datetime=arrow_dt.datetime,
         ev_title=event_dict.get("ev_title"),
         ev_tags=event_dict.get("ev_tags"),
         ev_text=event_dict.get("ev_text"),
     )
     session.add(event)
     await session.commit()
+    return event.id
 
 
 async def delete_all_events(session, tg_id) -> None:
@@ -54,41 +59,11 @@ async def show_all_events(session, tg_id) -> list:
     user_id = res.scalar().id
 
     events = await session.execute(select(Event).filter_by(user_tg_id=user_id))
-    events = events.all()
+    events = events.fetchall()
     events_list = [event[0] for event in events]
     return events_list
 
 
-# if __name__ == "__main__":
-#     initialize_database()
-#     tg_id = 123456789
-#     user_id = session.query(User).filter_by(user_tg_id=tg_id).first()
-#     if not user_id:
-#         user = User(user_tg_id=tg_id, tg_name="user123")
-#         session.add(user)
-#         user_id = session.query(User).filter_by(user_tg_id=tg_id).first()
-#         session.commit()
-
-#     date_time_str = "2023-01-01 12:00:00"
-#     date_time_format = "%Y-%m-%d %H:%M:%S"
-#     event_date = datetime.strptime(date_time_str, date_time_format).date()
-#     event_time = datetime.strptime(date_time_str, date_time_format).time()
-
-#     ev1 = Event(
-#         user_tg_id=user_id.id,
-#         ev_date=event_date,
-#         ev_time=event_time,
-#         ev_tags="#tag #tag1",
-#         ev_text="Event text 1",
-#     )
-#     ev2 = Event(
-#         user_tg_id=user_id.id,
-#         ev_date=event_date,
-#         ev_time=event_time,
-#         ev_tags="#tag #tag1",
-#         ev_text="Event text 2",
-#     )
-
-#     session.add(ev1)
-#     session.add(ev2)
-#     session.commit()
+async def show_one_event(session, event_id):
+    events = await session.execute(select(Event).filter_by(id=event_id))
+    return events.scalar()

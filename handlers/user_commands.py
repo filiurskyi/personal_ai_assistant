@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import uuid
@@ -25,7 +26,7 @@ router = Router()
 
 @router.message(Command("state"))
 async def command_start_handler(message: Message, state: FSMContext) -> None:
-    msg = "Current state is : " + await state.get_state()
+    msg = f"MSG from {message.from_user.id}\nCurrent state is : " + await state.get_state()
     logging.info(msg)
 
 
@@ -42,22 +43,24 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
 @router.message(Command("help"))
 async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    msg = "/start - log in\n/help - display help message\n/get_ics - download .ics calendar\n/del_all_events - delete all saved events\n\n/state - debug"
+    msg = ("/start - log in\n/help - display help message\n/get_ics - download .ics calendar\n/del_all_events - delete "
+           "all saved events\n\n/state - debug")
     await message.answer(msg, reply_markup=keyboard)
 
 
 @router.message(F.text == "Add new event")
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    # await state.set_state(States.asked_for_date)
-    await message.answer("not implemented", reply_markup=keyboard)
+    await state.set_state(States.asked_for_date)
+    await message.answer("Enter JSON with event:", reply_markup=keyboard)
 
 
 @router.message(States.asked_for_date)
-async def add_new_date_handler(message: Message, state: FSMContext) -> None:
+async def add_new_date_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("Enter Event Time!", reply_markup=keyboard)
-    await state.set_state(States.asked_for_time)
+    reply = await f.user_context_handler(message.text, message.from_user.id, session)
+    await message.answer(reply, reply_markup=keyboard)
+    await state.clear()
 
 
 @router.message(States.asked_for_time)
@@ -72,7 +75,7 @@ async def show_all_events_handler(message: Message, state: FSMContext, session) 
     events = await db.show_all_events(session, message.from_user.id)
     if events:
         for event in events:
-            ev = f.display_event_card(event.as_dict())
+            ev = await f.display_event_card(event.id, session, message.from_user.id)
             await message.answer(ev, reply_markup=keyboard)
     else:
         await message.answer(
@@ -87,7 +90,7 @@ async def voice_messages_handler(
     keyboard = await kb.keyboard_selector(state)
     file_id = await bot.get_file(message.voice.file_id)
     filename = f"./temp/{uuid.uuid4().int}.oga"
-    res = await bot.download_file(file_id.file_path, filename)
+    await bot.download_file(file_id.file_path, filename)
     audio = open(filename, "rb")
     transcript = gpt.voice_to_text(audio)
     audio.close()
@@ -133,8 +136,6 @@ async def show_all_events_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     keyboard = await kb.keyboard_selector(state)
-    print(type(bot))
-    print(type(session))
     answer = "Got message:\n" + message.text + "\n\nDoes nothing.."
     # await message.answer("running AI request")
     # answer = gpt.simple_query(message.text)

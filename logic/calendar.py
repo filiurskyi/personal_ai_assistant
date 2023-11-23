@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List, Type
 
+import arrow
 from ics import Calendar, Event
 
 from db_tools.models import Base
@@ -9,22 +10,20 @@ from db_tools.models import Base
 def generate_ics_file(events_list: List[Type[Base]]):
     # Create a Calendar
     cal = Calendar()
-    default_event_duration = timedelta(hours=1.0)
+    default_event_duration = timedelta(minutes=30)
+    default_time_zone = "Europe/Berlin"
     # Create an Event
-    date_time_format = "%Y-%m-%d %H:%M:%S"
-    date_time_ics = "%Y-%m-dT%H:M:%s"
+    date_time_format = "YYYY-MM-DD HH:mm:ss"
     for event_dict in events_list:
         evn = event_dict.as_dict()
         event = Event()
-        date_time_str = f"{evn.get('ev_date')} {evn.get('ev_time')}"
         event.name = evn.get("ev_title")
-        event.begin = datetime.strptime(date_time_str, date_time_format)
-        event.end = (event.begin + default_event_duration)
+        event.begin = arrow.get(evn.get('ev_datetime'))
+        event.duration = default_event_duration
         event.description = evn.get("ev_text") + "\n\n" + evn.get("ev_tags")
 
         cal.events.add(event)
-        print("-------------cal-------------\n", cal)
     with open("./temp/calendar.ics", "w", encoding="utf-8") as f:
-        f.writelines(str(cal))
+        f.writelines(cal.serialize())
 
     return "./temp/calendar.ics"

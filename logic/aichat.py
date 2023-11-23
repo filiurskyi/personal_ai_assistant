@@ -16,9 +16,8 @@ def simple_query(user_query):
         messages=[
             {
                 "role": "system",
-                "content": "You are a personal assistant, skilled in life planning, calendar management and personal improvements. Today is {dt}".format(
-                    dt=datetime.now()
-                ),
+                "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
+                           "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
@@ -42,13 +41,14 @@ def voice_to_text(audio) -> str:
         messages=[
             {
                 "role": "system",
-                "content": "You are a personal assistant, skilled in life planning, calendar management and personal improvements. Today is {dt}".format(
-                    dt=datetime.now()
-                ),
+                "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
+                           "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
-                "content": f"Format reply as json: {{'user_context': {contexts},'ev_date': 'dd.mm.yyyy','ev_title':'title', 'ev_time': 'hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'shot description of event'}}",
+                "content": f"Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
+                           f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
+                           f"description of event'}}",
             },
             {
                 "role": "user",
@@ -58,4 +58,5 @@ def voice_to_text(audio) -> str:
     )
     pprint("Tokens used: {}".format(completion.usage.total_tokens))
     reply_text = completion.choices[0].message.content
+    logging.info(reply_text)
     return reply_text

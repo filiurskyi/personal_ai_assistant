@@ -1,8 +1,8 @@
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
-async def keyboard_selector(state, menu=None):
-    state_data = await state.get_data()
+async def keyboard_selector(state):
+    # state_data = await state.get_data()
     state_name = await state.get_state()
     if state_name == "State:":
         keyboard = None

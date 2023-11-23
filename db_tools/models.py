@@ -1,7 +1,5 @@
-from sqlalchemy import Date  # is datetime.date()
 from sqlalchemy import Text  # variable length
-from sqlalchemy import Time  # is datetime.time()
-from sqlalchemy import JSON, Column, ForeignKey, Integer, SmallInteger, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String  # SmallInteger
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -25,8 +23,7 @@ class Event(Base):
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
     user = relationship(User)
-    ev_date = Column(Date)
-    ev_time = Column(Time)
+    ev_datetime = Column(DateTime)
     ev_title = Column(String(100))
     ev_tags = Column(Text)
     ev_text = Column(Text)
