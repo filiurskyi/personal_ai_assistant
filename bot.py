@@ -19,8 +19,6 @@ TOKEN = getenv("BOT_TOKEN")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
 
-
-
 async def main() -> None:
     engine = create_async_engine("sqlite+aiosqlite:///database.db/", echo=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)

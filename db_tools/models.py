@@ -15,8 +15,9 @@ class User(Base):
     tg_full_name = Column(String(250))
 
     def as_dict(self):
-        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
-
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
 
 
 class Event(Base):
@@ -31,9 +32,9 @@ class Event(Base):
     ev_text = Column(Text)
 
     def as_dict(self):
-        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
-
-
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
 
 
 class Setting(Base):
@@ -46,4 +47,6 @@ class Setting(Base):
     ai_api_key = Column(String(100))
 
     def as_dict(self):
-        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }

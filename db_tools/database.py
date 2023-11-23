@@ -8,7 +8,7 @@ from db_tools.models import Base, Event, Setting, User
 async def old_user_check(session, tg_id) -> bool:
     """returns False if user exists"""
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    user_id = res.scalar().id
+    user_id = res.scalar()
     if user_id:
         return False
     return True
@@ -16,7 +16,7 @@ async def old_user_check(session, tg_id) -> bool:
 
 async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    user_id = res.scalar().id
+    user_id = res.scalar()
     if not user_id:
         user = User(
             user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
@@ -42,13 +42,20 @@ async def add_event(session, tg_id, event_dict: dict) -> None:
     await session.commit()
 
 
+async def delete_all_events(session, tg_id) -> None:
+    events = await show_all_events(session, tg_id)
+    for event in events:
+        await session.delete(event)
+        await session.commit()
+
+
 async def show_all_events(session, tg_id) -> list:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
-    
+
     events = await session.execute(select(Event).filter_by(user_tg_id=user_id))
     events = events.all()
-    events_list = [event[0].as_dict() for event in events]
+    events_list = [event[0] for event in events]
     return events_list
 
 
