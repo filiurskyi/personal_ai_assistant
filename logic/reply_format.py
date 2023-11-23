@@ -8,7 +8,7 @@ async def user_context_handler(user_input: str, user_id, session):
     data = json.loads(user_input)
     if data.get("user_context", None) == "create_new_event":
         event_id = await db.add_event(session, user_id, data)
-        return await display_event_card(data, session, user_id)
+        return await display_event_card(event_id, session, user_id)
     else:
         return "None"
 
