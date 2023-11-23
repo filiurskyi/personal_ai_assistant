@@ -14,6 +14,10 @@ class User(Base):
     tg_username = Column(String(250), nullable=False)
     tg_full_name = Column(String(250))
 
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+
 
 class Event(Base):
     __tablename__ = "events"
@@ -23,8 +27,13 @@ class Event(Base):
     ev_date = Column(Date)
     ev_time = Column(Time)
     ev_title = Column(String(100))
-    ev_tags = Column(JSON)
+    ev_tags = Column(Text)
     ev_text = Column(Text)
+
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+
 
 
 class Setting(Base):
@@ -35,3 +44,6 @@ class Setting(Base):
     language = Column(String(2))  # en, ua, ru, de etc...
     ai_platform = Column(String(50))
     ai_api_key = Column(String(100))
+
+    def as_dict(self):
+        return {column.name: getattr(self, column.name) for column in self.__table__.columns}

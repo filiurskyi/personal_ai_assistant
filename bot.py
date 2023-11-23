@@ -12,16 +12,13 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from handlers import user_commands
 from middlewares.db import DbSessionMiddleware
 
-# from db_tools.models import Base
-
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
 # PG_PWD = getenv("PG_PWD")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
-# def database_init(engine) -> None:
-#     Base.metadata.create_all(bind=engine)
+
 
 
 async def main() -> None:

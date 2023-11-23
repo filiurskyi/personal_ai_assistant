@@ -1,6 +1,6 @@
 import logging
-from pprint import pprint
 from datetime import datetime
+from pprint import pprint
 
 from openai import OpenAI
 
@@ -48,7 +48,7 @@ def voice_to_text(audio) -> str:
             },
             {
                 "role": "system",
-                "content": f"Format reply as json: {{'user_context': {contexts},'ev_date': 'dd.mm.yyyy','ev_time': 'hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'text'}}",
+                "content": f"Format reply as json: {{'user_context': {contexts},'ev_date': 'dd.mm.yyyy','ev_title':'title', 'ev_time': 'hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'shot description of event'}}",
             },
             {
                 "role": "user",

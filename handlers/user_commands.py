@@ -13,9 +13,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import keyboards.kb as kb
 from db_tools import database as db
 from logic import aichat as gpt
+from logic import reply_format as f
 from logic.calendar import generate_ics_file
 from logic.states import States
-from logic import reply_format as f
+
 # from datetime import datetime
 
 
@@ -54,23 +55,27 @@ async def ask_for_date_handler(message: types.Message, state: FSMContext) -> Non
 
 
 @router.message(F.text == "Show all events")
-async def show_all_events_handler(message: Message, state: FSMContext) -> None:
+async def show_all_events_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("running AI request", reply_markup=keyboard)
+    for event in await db.show_all_events(session, message.from_user.id):
+        ev = f.display_event_card(event)
+        await message.answer(ev, reply_markup=keyboard)
 
 
 @router.message(F.voice)
-async def voice_messages_handler(message: Message, state: FSMContext, bot) -> None:
+async def voice_messages_handler(
+    message: Message, state: FSMContext, bot, session
+) -> None:
     keyboard = await kb.keyboard_selector(state)
     file_id = await bot.get_file(message.voice.file_id)
     filename = f"./temp/{uuid.uuid4().int}.oga"
     res = await bot.download_file(file_id.file_path, filename)
     audio = open(filename, "rb")
-    answer = f.user_context_handler(gpt.voice_to_text(audio))
+    transcript = gpt.voice_to_text(audio)
     audio.close()
+    answer = await f.user_context_handler(transcript, message.from_user.id, session)
+    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     os.remove(filename)
-    if not answer:
-        await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
 
 
 @router.message(Command("start"))
