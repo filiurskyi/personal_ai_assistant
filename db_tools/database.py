@@ -25,6 +25,20 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
         await session.commit()
 
 
+async def add_event(session, tg_id, event_dict: dict) -> None:
+    res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar()
+    event = Event(
+        user_tg_id=user_id.id,
+        ev_date=event_dict.get("ev_date"),
+        ev_time=event_dict.get("ev_time"),
+        ev_tags=event_dict.get("ev_tags"),
+        ev_text=event_dict.get("ev_text"),
+    )
+    session.add(event)
+    await session.commit()
+
+
 # if __name__ == "__main__":
 #     initialize_database()
 #     tg_id = 123456789

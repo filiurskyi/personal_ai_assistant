@@ -3,6 +3,7 @@ import os
 import uuid
 
 from aiogram import Bot, F, Router, types
+from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile, Message
@@ -14,7 +15,7 @@ from db_tools import database as db
 from logic import aichat as gpt
 from logic.calendar import generate_ics_file
 from logic.states import States
-
+from logic import reply_format as f
 # from datetime import datetime
 
 
@@ -65,9 +66,11 @@ async def voice_messages_handler(message: Message, state: FSMContext, bot) -> No
     filename = f"./temp/{uuid.uuid4().int}.oga"
     res = await bot.download_file(file_id.file_path, filename)
     audio = open(filename, "rb")
-    answer = gpt.voice_to_text(audio)
-    await message.answer(answer, reply_markup=keyboard)
-    # os.remove(filename)
+    answer = f.user_context_handler(gpt.voice_to_text(audio))
+    audio.close()
+    os.remove(filename)
+    if not answer:
+        await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
 
 
 @router.message(Command("start"))
