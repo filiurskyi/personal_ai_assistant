@@ -58,8 +58,18 @@ async def add_new_event_handler(message: Message, state: FSMContext) -> None:
 @router.message(States.asked_for_date)
 async def add_new_date_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    reply = await f.user_context_handler(message.text, message.from_user.id, session)
-    await message.answer(reply, reply_markup=keyboard)
+    try:
+        reply = await f.user_context_handler(message.text, message.from_user.id, session)
+    except:
+        reply = """Wrong input. Should be like:<code>
+{
+  "user_context": "create_new_event",
+  "ev_title": "Заголовок",
+  "ev_datetime": "03.12.2023 19:00",
+  "ev_tags": "#tag1 #tag2",
+  "ev_text": "Опис зустрічі"
+}</code>"""
+    await message.answer(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await state.clear()
 
 
