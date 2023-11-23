@@ -11,7 +11,8 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, nullable=False, unique=True)
-    tg_name = Column(String(250), nullable=False)
+    tg_username = Column(String(250), nullable=False)
+    tg_full_name = Column(String(250))
 
 
 class Event(Base):

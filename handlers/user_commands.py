@@ -2,20 +2,20 @@ import logging
 import os
 import uuid
 
-from aiogram import F, Router, types
+from aiogram import Bot, F, Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile, Message
 from aiogram.utils.markdown import hbold
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import keyboards.kb as kb
-from bot import bot
+from db_tools import database as db
 from logic import aichat as gpt
 from logic.calendar import generate_ics_file
 from logic.states import States
 
 # from datetime import datetime
-
 
 
 router = Router()
@@ -59,7 +59,7 @@ async def show_all_events_handler(message: Message, state: FSMContext) -> None:
 
 
 @router.message(F.voice)
-async def voice_messages_handler(message: Message, state: FSMContext) -> None:
+async def voice_messages_handler(message: Message, state: FSMContext, bot) -> None:
     keyboard = await kb.keyboard_selector(state)
     file_id = await bot.get_file(message.voice.file_id)
     filename = f"./temp/{uuid.uuid4().int}.oga"
@@ -71,20 +71,36 @@ async def voice_messages_handler(message: Message, state: FSMContext) -> None:
 
 
 @router.message(Command("start"))
-async def command_start_handler(message: Message, state: FSMContext) -> None:
+async def command_start_handler(message: Message, state: FSMContext, session) -> None:
     """
     This handler receives messages with `/start` command
     """
-
     keyboard = await kb.keyboard_selector(state)
-    await message.answer(
-        f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
-    )
+    if await db.old_user_check(session, message.from_user.id):
+        await message.answer(
+            f"Welcome back, {hbold(message.from_user.full_name)}!\nServer has been updated",
+            reply_markup=keyboard,
+        )
+    else:
+        await db.add_user(
+            session,
+            message.from_user.id,
+            message.from_user.username,
+            message.from_user.full_name,
+        )
+        await message.answer(
+            f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
+        )
 
 
 @router.message(F.text)
-async def show_all_events_handler(message: Message, state: FSMContext) -> None:
+async def show_all_events_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("running AI request")
-    answer = gpt.simple_query(message.text)
+    print(type(bot))
+    print(type(session))
+    answer = "OK"
+    # await message.answer("running AI request")
+    # answer = gpt.simple_query(message.text)
     await message.answer(answer, reply_markup=keyboard)
