@@ -36,11 +36,13 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
     file = FSInputFile(generate_ics_file(events_list))
     await message.answer_document(document=file, reply_markup=keyboard)
 
+
 @router.message(Command("help"))
 async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     msg = "/start - log in\n/help - display help message\n/get_ics - download .ics calendar\n/del_all_events - delete all saved events\n\n/state - debug"
     await message.answer(msg, reply_markup=keyboard)
+
 
 @router.message(F.text == "Add new event")
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
@@ -72,8 +74,9 @@ async def show_all_events_handler(message: Message, state: FSMContext, session) 
             await message.answer(ev, reply_markup=keyboard)
     else:
         await message.answer(
-        "<i>No events found.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
-    )
+            "<i>No events found.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
+        )
+
 
 @router.message(F.voice)
 async def voice_messages_handler(

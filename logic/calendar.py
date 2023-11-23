@@ -1,5 +1,7 @@
-from ics import Calendar, Event
 from datetime import datetime, timedelta
+
+from ics import Calendar, Event
+
 
 def generate_ics_file(events_list: list):
     # Create a Calendar
