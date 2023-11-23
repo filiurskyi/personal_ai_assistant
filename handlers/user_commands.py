@@ -33,8 +33,10 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 async def command_get_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
     events_list = await db.show_all_events(session, message.from_user.id)
-    file = FSInputFile(generate_ics_file(events_list))
+    file_path = generate_ics_file(events_list)
+    file = FSInputFile(file_path)
     await message.answer_document(document=file, reply_markup=keyboard)
+    os.remove(file_path)
 
 
 @router.message(Command("help"))
