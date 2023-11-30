@@ -26,7 +26,10 @@ router = Router()
 
 @router.message(Command("state"))
 async def command_start_handler(message: Message, state: FSMContext) -> None:
-    msg = f"MSG from {message.from_user.id}\nCurrent state is : " + await state.get_state()
+    msg = (
+        f"MSG from {message.from_user.id}\nCurrent state is : "
+        + await state.get_state()
+    )
     logging.info(msg)
 
 
@@ -43,8 +46,10 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
 @router.message(Command("help"))
 async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    msg = ("/start - log in\n/help - display help message\n/get_ics - download .ics calendar\n/del_all_events - delete "
-           "all saved events\n\n/state - debug")
+    msg = (
+        "/start - log in\n/help - display help message\n/get_ics - download .ics calendar\n/del_all_events - delete "
+        "all saved events\n\n/state - debug"
+    )
     await message.answer(msg, reply_markup=keyboard)
 
 
@@ -55,11 +60,13 @@ async def add_new_event_handler(message: Message, state: FSMContext) -> None:
     await message.answer("Enter JSON with event:", reply_markup=keyboard)
 
 
-@router.message(States.asked_for_date)
+@router.message(States.asked_for_date)  # user message must be json
 async def add_new_date_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
     try:
-        reply = await f.user_context_handler(message.text, message.from_user.id, session)
+        reply = await f.user_context_handler(
+            message.text, message.from_user.id, session
+        )
     except:
         reply = """Wrong input. Should be like:<code>
 {
@@ -98,6 +105,7 @@ async def voice_messages_handler(
     message: Message, state: FSMContext, bot, session
 ) -> None:
     keyboard = await kb.keyboard_selector(state)
+    await message.answer("Got you, pls w8...", reply_markup=keyboard)
     file_id = await bot.get_file(message.voice.file_id)
     filename = f"./temp/{uuid.uuid4().int}.oga"
     await bot.download_file(file_id.file_path, filename)

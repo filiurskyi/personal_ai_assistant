@@ -1,5 +1,6 @@
 from sqlalchemy import Text  # variable length
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String  # SmallInteger
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer,  # SmallInteger
+                        String)
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -22,7 +23,7 @@ class Event(Base):
     __tablename__ = "events"
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship(User)
+    # user = relationship(User)
     ev_datetime = Column(DateTime)
     ev_title = Column(String(100))
     ev_tags = Column(Text)
@@ -34,11 +35,26 @@ class Event(Base):
         }
 
 
+class Note(Base):
+    __tablename__ = "notes"
+    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
+    user_tg_id = Column(Integer, ForeignKey("users.id"))
+    # user = relationship(User)
+    note_title = Column(Text)
+    note_text = Column(Text)
+    note_tags = Column(Text)
+
+    def as_dict(self):
+        return {
+            column.name: getattr(self, column.name) for column in self.__table__.columns
+        }
+
+
 class Setting(Base):
     __tablename__ = "settings"
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship(User)
+    # user = relationship(User)
     language = Column(String(2))  # en, ua, ru, de etc...
     ai_platform = Column(String(50))
     ai_api_key = Column(String(100))

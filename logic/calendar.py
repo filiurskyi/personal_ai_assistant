@@ -18,7 +18,7 @@ def generate_ics_file(events_list: List[Type[Base]]):
         evn = event_dict.as_dict()
         event = Event()
         event.name = evn.get("ev_title")
-        event.begin = arrow.get(evn.get('ev_datetime'))
+        event.begin = arrow.get(evn.get("ev_datetime"))
         event.duration = default_event_duration
         event.description = evn.get("ev_text") + "\n\n" + evn.get("ev_tags")
 

@@ -17,7 +17,7 @@ def simple_query(user_query):
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}".format(dt=datetime.now()),
+                "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
@@ -34,7 +34,7 @@ def simple_query(user_query):
 
 
 def voice_to_text(audio) -> str:
-    contexts = "'create_new_event'|'gpt-query'"
+    contexts = "'create_new_event'|'gpt-query'|'create_new_note'"
     transcript = client.audio.transcriptions.create(model="whisper-1", file=audio)
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -42,13 +42,18 @@ def voice_to_text(audio) -> str:
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}".format(dt=datetime.now()),
+                "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
-                "content": f"Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
-                           f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
-                           f"description of event'}}",
+                "content": f"If user_context = create_new_event: Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
+                f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
+                f"description of event'}}",
+            },
+            {
+                "role": "system",
+                "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'title',"
+                f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
             },
             {
                 "role": "user",
