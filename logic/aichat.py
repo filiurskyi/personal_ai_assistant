@@ -52,7 +52,7 @@ def voice_to_text(audio) -> str:
             },
             {
                 "role": "system",
-                "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'title',"
+                "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title',"
                 f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
             },
             {

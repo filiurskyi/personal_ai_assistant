@@ -60,6 +60,7 @@ async def add_note(session, tg_id, note_dict: dict):
         user_tg_id=user_id,
         note_title=note_dict.get("nt_title"),
         note_text=note_dict.get("nt_text"),
+        note_tags=note_dict.get("nt_tags"),
     )
     session.add(note)
     await session.commit()
@@ -73,6 +74,13 @@ async def delete_all_events(session, tg_id) -> None:
         await session.commit()
 
 
+async def del_all_notes(session, tg_id) -> None:
+    notes = await show_all_notes(session, tg_id)
+    for note in notes:
+        await session.delete(note)
+        await session.commit()
+
+
 async def show_all_events(session, tg_id) -> list:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
@@ -81,6 +89,16 @@ async def show_all_events(session, tg_id) -> list:
     events = events.fetchall()
     events_list = [event[0] for event in events]
     return events_list
+
+
+async def show_all_notes(session, tg_id) -> list:
+    res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar().id
+
+    notes = await session.execute(select(Note).filter_by(user_tg_id=user_id))
+    notes = notes.fetchall()
+    notes_list = [event[0] for event in notes]
+    return notes_list
 
 
 async def show_one_event(session, event_id):

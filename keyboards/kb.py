@@ -16,5 +16,7 @@ def core_kb() -> ReplyKeyboardBuilder:
     kb = ReplyKeyboardBuilder()
     kb.button(text="Add new event")
     kb.button(text="Show all events")
+    kb.button(text="Add new note")
+    kb.button(text="Show all notes")
     kb.adjust(2)
     return kb

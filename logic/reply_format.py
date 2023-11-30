@@ -1,4 +1,5 @@
 import json
+import logging
 
 import arrow
 
@@ -14,6 +15,7 @@ async def user_context_handler(user_input: str, user_id, session):
     elif data.get("user_context", None) == "create_new_note":
         note_id = await db.add_note(session, user_id, data)
         reply = await display_note_card(note_id, session, user_id)
+        print(data)
         return reply
     else:
         return "None"
@@ -42,7 +44,7 @@ async def display_note_card(note_id, session, user_id):
     title = note.note_title
     text = note.note_text
     tags = note.note_tags
-    message = f"""<i>Event details:</i> [{card_id}]
+    message = f"""<i>Note details:</i> [{card_id}]
 <b>{title}</b>
 <i>{tags}</i>
 {text}"""
