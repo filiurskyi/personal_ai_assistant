@@ -38,7 +38,8 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 async def command_get_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
     events_list = await db.show_all_events(session, message.from_user.id)
-    file_path = generate_ics_file(events_list)
+    default_event_duration = await db.get_user_default_event_duration(session, message.from_user.id)
+    file_path = generate_ics_file(events_list, default_event_duration)
     file = FSInputFile(file_path)
     await message.answer_document(document=file, reply_markup=keyboard)
     os.remove(file_path)

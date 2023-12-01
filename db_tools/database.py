@@ -25,10 +25,17 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
             locale="Europe/Berlin",
             ai_platform="openai",
             ai_api_key=None,
+            calendar_event_duration = 30,
         )
         session.add(user)
         session.add(settings)
         await session.commit()
+
+
+async def get_user_default_event_duration(session, tg_id):
+    res = await session.execute(select(Setting.calendar_event_duration).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar()
+    return user_id
 
 
 async def add_event(session, tg_id, event_dict: dict) -> None:
@@ -38,7 +45,7 @@ async def add_event(session, tg_id, event_dict: dict) -> None:
 
     # ev_datetime
     user_default_tz = await session.execute(select(Setting.locale).filter_by(user_tg_id=tg_id))
-    print(user_default_tz)
+    user_default_tz = user_default_tz.fetchone()[0]
     date_time_format = "DD.MM.YYYY HH:mm"
     date_time_str = event_dict.get("ev_datetime")
     arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_default_tz).to(
