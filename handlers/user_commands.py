@@ -49,7 +49,7 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
 async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     msg = (
-        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\n\n\n/del_all_events - delete "
+        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\nFor Apple users: https://routinehub.co/shortcut/7005/\n\n/del_all_events - delete "
         "all events\n\n/del_all_notes - delete all notes\n\n\n\n/state - for debugging"
     )
     await message.answer(msg, reply_markup=keyboard)

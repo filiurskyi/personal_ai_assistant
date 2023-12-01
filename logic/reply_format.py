@@ -23,9 +23,10 @@ async def user_context_handler(user_input: str, user_id, session):
 
 async def display_event_card(event_id, session, user_id):
     event = await db.show_one_event(session, event_id)
+    user_tz = await db.get_user_tz(session, user_id)
     card_id = event.id
-    time = arrow.get(event.ev_datetime).to("Europe/Berlin").format("HH:mm")
-    date = arrow.get(event.ev_datetime).to("Europe/Berlin").format("DD.MM.YYYY")
+    time = arrow.get(event.ev_datetime).to(user_tz).format("HH:mm")
+    date = arrow.get(event.ev_datetime).to(user_tz).format("DD.MM.YYYY")
     title = event.ev_title
     tags = event.ev_tags
     text = event.ev_text

@@ -55,7 +55,7 @@ class Setting(Base):
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
     # user = relationship(User)
-    locale = Column(String(20))  # Europe/Berlin etc...
+    user_timezone = Column(String(20))  # Europe/Berlin etc...
     ai_platform = Column(String(50))
     ai_api_key = Column(String(100))
     calendar_event_duration = Column(Integer)
