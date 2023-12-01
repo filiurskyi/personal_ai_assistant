@@ -1,7 +1,7 @@
 import arrow
 from sqlalchemy import select
 
-from db_tools.models import Event, Note, User
+from db_tools.models import Event, Note, User, Setting
 
 
 async def old_user_check(session, tg_id) -> bool:
@@ -20,7 +20,14 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
         user = User(
             user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
         )
+        settings = Setting(
+            user_tg_id=tg_id,
+            locale="Europe/Berlin",
+            ai_platform="openai",
+            ai_api_key=None,
+        )
         session.add(user)
+        session.add(settings)
         await session.commit()
 
 
@@ -30,7 +37,8 @@ async def add_event(session, tg_id, event_dict: dict) -> None:
     user_id = res.scalar().id
 
     # ev_datetime
-    user_default_tz = "Europe/Berlin"
+    user_default_tz = await session.execute(select(Setting.locale).filter_by(user_tg_id=tg_id))
+    print(user_default_tz)
     date_time_format = "DD.MM.YYYY HH:mm"
     date_time_str = event_dict.get("ev_datetime")
     arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_default_tz).to(

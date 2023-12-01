@@ -55,7 +55,7 @@ class Setting(Base):
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
     # user = relationship(User)
-    language = Column(String(2))  # en, ua, ru, de etc...
+    locale = Column(String(20))  # Europe/Berlin etc...
     ai_platform = Column(String(50))
     ai_api_key = Column(String(100))
 
