@@ -20,7 +20,7 @@ OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
 async def scheduler():
     while True:
-        await asyncio.sleep(15)
+        await asyncio.sleep(60)
         print("working..")
 
 async def main() -> None:
@@ -33,7 +33,7 @@ async def main() -> None:
     # dp.startup.trigger(database_init(engine))
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker))
     dp.include_routers(user_commands.router)
-    
+
     tasks = [dp.start_polling(bot), scheduler()]
     await asyncio.gather(*tasks)
 
