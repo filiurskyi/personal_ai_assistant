@@ -58,7 +58,8 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 async def command_get_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
     events_list = await db.show_all_events(session, message.from_user.id)
-    file_path = generate_ics_file(events_list)
+    default_event_duration = await db.get_user_default_event_duration(session, message.from_user.id)
+    file_path = generate_ics_file(events_list, default_event_duration)
     file = FSInputFile(file_path)
     await message.answer_document(document=file, reply_markup=keyboard)
     os.remove(file_path)
@@ -68,7 +69,7 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
 async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     msg = (
-        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\n\n\n/del_all_events - delete "
+        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\nFor Apple users: https://routinehub.co/shortcut/7005/\n\n/del_all_events - delete "
         "all events\n\n/del_all_notes - delete all notes\n\n\n\n/state - for debugging"
     )
     await message.answer(msg, reply_markup=keyboard)

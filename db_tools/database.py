@@ -1,7 +1,7 @@
 import arrow
 from sqlalchemy import select
 
-from db_tools.models import Event, Note, User
+from db_tools.models import Event, Note, User, Setting
 
 
 async def old_user_check(session, tg_id) -> bool:
@@ -20,8 +20,27 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
         user = User(
             user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
         )
+        settings = Setting(
+            user_tg_id=tg_id,
+            user_timezone="Europe/Berlin",
+            ai_platform="openai",
+            ai_api_key=None,
+            calendar_event_duration = 30,
+        )
         session.add(user)
+        session.add(settings)
         await session.commit()
+
+
+async def get_user_default_event_duration(session, tg_id):
+    res = await session.execute(select(Setting.calendar_event_duration).filter_by(user_tg_id=tg_id))
+    user_id = res.scalar()
+    return user_id
+
+
+async def get_user_tz(session, tg_id):
+    user_default_tz = await session.execute(select(Setting.user_timezone).filter_by(user_tg_id=tg_id))
+    return user_default_tz.fetchone()[0]
 
 
 async def add_event(session, tg_id, event_dict: dict) -> None:
@@ -30,10 +49,10 @@ async def add_event(session, tg_id, event_dict: dict) -> None:
     user_id = res.scalar().id
 
     # ev_datetime
-    user_default_tz = "Europe/Berlin"
+    user_tz = await get_user_tz(session, tg_id)
     date_time_format = "DD.MM.YYYY HH:mm"
     date_time_str = event_dict.get("ev_datetime")
-    arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_default_tz).to(
+    arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_tz).to(
         "UTC"
     )
 

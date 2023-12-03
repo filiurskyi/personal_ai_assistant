@@ -18,9 +18,13 @@ TOKEN = getenv("BOT_TOKEN")
 # PG_PWD = getenv("PG_PWD")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
+async def scheduler():
+    while True:
+        await asyncio.sleep(60)
+        print("working..")
 
 async def main() -> None:
-    engine = create_async_engine("sqlite+aiosqlite:///database.db/", echo=True)
+    engine = create_async_engine("sqlite+aiosqlite:///database.db/", echo=False)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
 
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
@@ -29,7 +33,9 @@ async def main() -> None:
     # dp.startup.trigger(database_init(engine))
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker))
     dp.include_routers(user_commands.router)
-    await dp.start_polling(bot)
+
+    tasks = [dp.start_polling(bot), scheduler()]
+    await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":

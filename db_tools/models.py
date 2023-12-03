@@ -1,5 +1,5 @@
 from sqlalchemy import Text  # variable length
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer,  # SmallInteger
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, # SmallInteger, 
                         String)
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -55,9 +55,10 @@ class Setting(Base):
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
     # user = relationship(User)
-    language = Column(String(2))  # en, ua, ru, de etc...
+    user_timezone = Column(String(20))  # Europe/Berlin etc...
     ai_platform = Column(String(50))
     ai_api_key = Column(String(100))
+    calendar_event_duration = Column(Integer)
 
     def as_dict(self):
         return {
