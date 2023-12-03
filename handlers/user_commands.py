@@ -24,6 +24,26 @@ from logic.states import States
 router = Router()
 
 
+@router.message(States.adding_event_json, F.text == "Cancel")
+async def show_all_events_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    await state.clear()
+    keyboard = await kb.keyboard_selector(state)
+    answer = "Cancelled adding new event.\n\nI am your personal assistant."
+    await message.answer(answer, reply_markup=keyboard)
+
+
+@router.message(States.adding_note_json, F.text == "Cancel")
+async def show_all_events_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    await state.clear()
+    keyboard = await kb.keyboard_selector(state)
+    answer = "Cancelled adding new note.\n\nI am your personal assistant."
+    await message.answer(answer, reply_markup=keyboard)
+
+
 @router.message(Command("state"))
 async def command_start_handler(message: Message, state: FSMContext) -> None:
     stt = await state.get_state()
@@ -56,54 +76,33 @@ async def command_help_handler(message: Message, state: FSMContext) -> None:
 
 @router.message(F.text == "Add new event")
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
-    keyboard = await kb.keyboard_selector(state)
     await state.set_state(States.adding_event_json)
+    keyboard = await kb.keyboard_selector(state)
     await message.answer("Enter JSON with event:", reply_markup=keyboard)
 
 
 @router.message(F.text == "Add new note")
 async def add_new_note_handler(message: Message, state: FSMContext) -> None:
-    keyboard = await kb.keyboard_selector(state)
     await state.set_state(States.adding_note_json)
+    keyboard = await kb.keyboard_selector(state)
     await message.answer("Enter JSON with note:", reply_markup=keyboard)
 
 
 @router.message(States.adding_event_json)  # user message must be json
 async def add_new_event_a_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    try:
-        reply = await f.user_context_handler(
-            message.text, message.from_user.id, session
-        )
-    except:
-        reply = """Wrong input. Should be like:<code>
-{
-  "user_context": "create_new_event",
-  "ev_title": "title",
-  "ev_datetime": "03.12.2023 19:00",
-  "ev_tags": "#tag #tag #tag",
-  "ev_text": "text"
-}</code>"""
-    await message.answer(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+    gpt_answer = gpt.text_to_text(message.text, 'create_new_event')
+    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
+    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await state.clear()
 
 
 @router.message(States.adding_note_json)  # user message must be json
 async def add_new_note_a_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    try:
-        reply = await f.user_context_handler(
-            message.text, message.from_user.id, session
-        )
-    except:
-        reply = """Wrong input. Should be like:<code>
-{
-    'user_context': 'create_new_note', 
-    'nt_title': 'title', 
-    'nt_text': 'text',
-    'nt_tags': '#tag #tag #tag'
-}</code>"""
-    await message.answer(reply, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+    gpt_answer = gpt.text_to_text(message.text, 'create_new_note')
+    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
+    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await state.clear()
 
 
@@ -193,12 +192,11 @@ async def del_all_notes_handler(message: Message, state: FSMContext, session) ->
     )
 
 
+
 @router.message(F.text)
 async def show_all_events_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     keyboard = await kb.keyboard_selector(state)
     answer = "Got message:\n" + message.text + "\n\nDoes nothing.."
-    # await message.answer("running AI request")
-    # answer = gpt.simple_query(message.text)
     await message.answer(answer, reply_markup=keyboard)
