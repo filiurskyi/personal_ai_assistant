@@ -79,14 +79,14 @@ async def command_help_handler(message: Message, state: FSMContext) -> None:
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(States.adding_event_json)
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("Enter JSON with event:", reply_markup=keyboard)
+    await message.answer("Enter your event description:", reply_markup=keyboard)
 
 
 @router.message(F.text == "Add new note")
 async def add_new_note_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(States.adding_note_json)
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("Enter JSON with note:", reply_markup=keyboard)
+    await message.answer("Enter your note description:", reply_markup=keyboard)
 
 
 @router.message(States.adding_event_json)  # user message must be json
