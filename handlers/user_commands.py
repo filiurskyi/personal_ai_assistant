@@ -40,7 +40,8 @@ async def show_all_events_handler(
 ) -> None:
     await state.clear()
     keyboard = await kb.keyboard_selector(state)
-    answer = "Cancelled adding new note.\n\nI am your personal assistant."
+    answer = ("Cancelled adding new note.\n\nI am your personal assistant, i can create events and notes from your "
+              "voice message, or you can manually add events or notes by buttons Write.. below your screen.")
     await message.answer(answer, reply_markup=keyboard)
 
 
