@@ -89,6 +89,18 @@ async def add_new_note_handler(message: Message, state: FSMContext) -> None:
     await message.answer("Enter your note description by text:", reply_markup=keyboard)
 
 
+@router.message(States.adding_event_json, F.voice)
+async def voice_messages_add_event_state_handler(message: Message, state: FSMContext, bot, session) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
+
+
+@router.message(States.adding_note_json, F.voice)
+async def voice_messages_add_note_state_handler(message: Message, state: FSMContext, bot, session) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
+
+
 @router.message(States.adding_event_json)  # user message must be json
 async def add_new_event_a_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
@@ -150,18 +162,6 @@ async def voice_messages_handler(
     answer = await f.user_context_handler(transcript, message.from_user.id, session)
     await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     os.remove(filename)
-
-
-@router.message(States.adding_event_json, F.voice)
-async def voice_messages_add_event_state_handler(message: Message, state: FSMContext, bot, session) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
-
-
-@router.message(States.adding_note_json, F.voice)
-async def voice_messages_add_note_state_handler(message: Message, state: FSMContext, bot, session) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
 
 
 @router.message(Command("start"))
