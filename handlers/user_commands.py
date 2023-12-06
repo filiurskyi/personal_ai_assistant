@@ -190,7 +190,6 @@ async def voice_messages_handler(
     await bot.download_file(file_id.file_path, file_path)
     audio = open(file_path, "rb")
     transcript = gpt.voice_to_text(audio)
-    print("-----------------------", transcript)
     audio.close()
     answer = await f.user_context_handler(transcript, message.from_user.id, session)
     await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
