@@ -2,7 +2,7 @@ import json
 import logging
 import os
 #
-import pytesseract # for OCR reading, needs external programm... 
+# import pytesseract # for OCR reading, needs external programm... 
 # https://github.com/tesseract-ocr/tessdoc
 import uuid
 
