@@ -20,7 +20,7 @@ from logic import aichat as gpt
 from logic import reply_format as f
 from logic.calendar import generate_ics_file
 from logic.states import States
-from PIL import Image
+# from PIL import Image
 # from datetime import datetime
 
 
