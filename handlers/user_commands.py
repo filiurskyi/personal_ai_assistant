@@ -1,6 +1,9 @@
 import json
 import logging
 import os
+#
+import pytesseract # for OCR reading, needs external programm... 
+# https://github.com/tesseract-ocr/tessdoc
 import uuid
 
 from aiogram import Bot, F, Router, types
@@ -17,7 +20,7 @@ from logic import aichat as gpt
 from logic import reply_format as f
 from logic.calendar import generate_ics_file
 from logic.states import States
-
+from PIL import Image
 # from datetime import datetime
 
 
@@ -133,6 +136,21 @@ async def add_new_note_a_handler(message: Message, state: FSMContext, session) -
     await state.clear()
 
 
+@router.message(F.photo)
+async def get_photo_handler(message: Message, state: FSMContext, session, bot) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    file_id = await bot.get_file(message.photo[-1].file_id)
+    file_path = f"./screenshots/{uuid.uuid4().int}.jpg"
+    await bot.download_file(file_id.file_path, file_path)
+    image = Image.open(file_path)
+    # recognized_text = pytesseract.image_to_string(image)
+    recognized_text = "uncomment pytesseract.image_to_string(image)"
+    await message.answer(
+            f"<i>Photo received with name: {file_path}</i>\nText recognized: {recognized_text}", reply_markup=keyboard, parse_mode=ParseMode.HTML
+        )
+    os.remove(file_path)
+
+
 @router.message(F.text == "Show all events")
 async def show_all_events_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
@@ -168,14 +186,14 @@ async def voice_messages_handler(
     keyboard = await kb.keyboard_selector(state)
     await message.answer("Got you, pls w8...", reply_markup=keyboard)
     file_id = await bot.get_file(message.voice.file_id)
-    filename = f"./temp/{uuid.uuid4().int}.oga"
-    await bot.download_file(file_id.file_path, filename)
-    audio = open(filename, "rb")
+    file_path = f"./temp/{uuid.uuid4().int}.oga"
+    await bot.download_file(file_id.file_path, file_path)
+    audio = open(file_path, "rb")
     transcript = gpt.voice_to_text(audio)
     audio.close()
     answer = await f.user_context_handler(transcript, message.from_user.id, session)
     await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-    os.remove(filename)
+    os.remove(file_path)
 
 
 @router.message(Command("start"))
