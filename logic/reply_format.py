@@ -7,7 +7,10 @@ from db_tools import database as db
 
 
 async def user_context_handler(user_input: str, user_id, session):
-    data = json.loads(user_input)
+    try:
+        data = json.loads(user_input)
+    except json.JSONDecodeError:
+        return f"Unable to process your request.\nPlease give me instructions more precisely. Your response is:\n\n{user_input}"
     if data.get("user_context", None) == "create_new_event":
         event_id = await db.add_event(session, user_id, data)
         reply = await display_event_card(event_id, session, user_id)

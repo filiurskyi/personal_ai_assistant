@@ -18,10 +18,12 @@ TOKEN = getenv("BOT_TOKEN")
 # PG_PWD = getenv("PG_PWD")
 OPENAI_API_KEY = getenv("OPENAI_API_KEY")
 
+
 async def scheduler():
     while True:
         await asyncio.sleep(60)
         logging.info("scheduled 60 sec task...")
+
 
 async def main() -> None:
     engine = create_async_engine("sqlite+aiosqlite:///database.db/", echo=False)
