@@ -10,7 +10,7 @@ from db_tools.models import Base
 def generate_ics_file(events_list: List[Type[Base]], event_duration=30):
     # Create a Calendar
     cal = Calendar()
-    
+
     # Create an Event
     for event_dict in events_list:
         evn = event_dict.as_dict()

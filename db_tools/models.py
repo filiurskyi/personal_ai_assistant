@@ -1,5 +1,5 @@
 from sqlalchemy import Text  # variable length
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, # SmallInteger, 
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer,  # SmallInteger,
                         String)
 from sqlalchemy.orm import declarative_base, relationship
 

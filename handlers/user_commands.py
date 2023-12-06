@@ -40,18 +40,17 @@ async def show_all_events_handler(
 ) -> None:
     await state.clear()
     keyboard = await kb.keyboard_selector(state)
-    answer = ("Cancelled adding new note.\n\nI am your personal assistant, i can create events and notes from your "
-              "voice message, or you can manually add events or notes by buttons Write.. below your screen.")
+    answer = (
+        "Cancelled adding new note.\n\nI am your personal assistant, i can create events and notes from your "
+        "voice message, or you can manually add events or notes by buttons Write.. below your screen."
+    )
     await message.answer(answer, reply_markup=keyboard)
 
 
 @router.message(Command("state"))
 async def command_start_handler(message: Message, state: FSMContext) -> None:
     stt = await state.get_state()
-    msg = (
-        f"MSG from {message.from_user.id}\nCurrent state is : "
-        + str(stt)
-    )
+    msg = f"MSG from {message.from_user.id}\nCurrent state is : " + str(stt)
     logging.info(msg)
 
 
@@ -59,7 +58,9 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
 async def command_get_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
     events_list = await db.show_all_events(session, message.from_user.id)
-    default_event_duration = await db.get_user_default_event_duration(session, message.from_user.id)
+    default_event_duration = await db.get_user_default_event_duration(
+        session, message.from_user.id
+    )
     file_path = generate_ics_file(events_list, default_event_duration)
     file = FSInputFile(file_path)
     await message.answer_document(document=file, reply_markup=keyboard)
@@ -91,21 +92,33 @@ async def add_new_note_handler(message: Message, state: FSMContext) -> None:
 
 
 @router.message(States.adding_event_json, F.voice)
-async def voice_messages_add_event_state_handler(message: Message, state: FSMContext, bot, session) -> None:
+async def voice_messages_add_event_state_handler(
+    message: Message, state: FSMContext, bot, session
+) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
+    await message.answer(
+        "I am accepting only text in this mode. To use voice input press Cancel.",
+        reply_markup=keyboard,
+        parse_mode=ParseMode.HTML,
+    )
 
 
 @router.message(States.adding_note_json, F.voice)
-async def voice_messages_add_note_state_handler(message: Message, state: FSMContext, bot, session) -> None:
+async def voice_messages_add_note_state_handler(
+    message: Message, state: FSMContext, bot, session
+) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("I am accepting only text in this mode. To use voice input press Cancel.", reply_markup=keyboard, parse_mode=ParseMode.HTML)
+    await message.answer(
+        "I am accepting only text in this mode. To use voice input press Cancel.",
+        reply_markup=keyboard,
+        parse_mode=ParseMode.HTML,
+    )
 
 
 @router.message(States.adding_event_json)  # user message must be json
 async def add_new_event_a_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    gpt_answer = gpt.text_to_text(message.text, 'create_new_event')
+    gpt_answer = gpt.text_to_text(message.text, "create_new_event")
     answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
     await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await state.clear()
@@ -114,7 +127,7 @@ async def add_new_event_a_handler(message: Message, state: FSMContext, session) 
 @router.message(States.adding_note_json)  # user message must be json
 async def add_new_note_a_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    gpt_answer = gpt.text_to_text(message.text, 'create_new_note')
+    gpt_answer = gpt.text_to_text(message.text, "create_new_note")
     answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
     await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
     await state.clear()
@@ -204,7 +217,6 @@ async def del_all_notes_handler(message: Message, state: FSMContext, session) ->
     await message.answer(
         "<i>All events deleted.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
     )
-
 
 
 @router.message(F.text)
