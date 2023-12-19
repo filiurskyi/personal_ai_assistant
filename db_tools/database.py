@@ -1,7 +1,9 @@
+import datetime
+
 import arrow
 from sqlalchemy import select
 
-from db_tools.models import Event, Note, Setting, User
+from db_tools.models import Event, Note, Screenshot, Setting, User
 
 
 async def old_user_check(session, tg_id) -> bool:
@@ -130,3 +132,30 @@ async def show_one_event(session, event_id):
 async def show_one_note(session, note_id):
     notes = await session.execute(select(Note).filter_by(id=note_id))
     return notes.scalar()
+
+
+async def add_new_screenshot(session, tg_id, file_id, caption, ocr_text) -> int:
+    tags = [tag for tag in caption.split() if tag.startswith("#")]
+    hashtags = " ".join(tags)
+    screenshot = Screenshot(
+        user_tg_id=tg_id,
+        file_id=file_id,
+        hashtags=hashtags,
+        caption=caption.lower(),
+        ocr_text=ocr_text.lower(),
+        created=datetime.datetime.now(),
+    )
+    session.add(screenshot)
+    await session.commit()
+    return screenshot.id
+
+
+async def find_screenshot(session, tg_id, prompt):
+    screenshot_id = await session.execute(
+        select(Screenshot.file_id).filter(
+            Screenshot.ocr_text.like("%" + prompt.lower() + "%")
+        )
+        # .where(Screenshot.user_tg_id == tg_id)
+    )
+    return screenshot_id.all()
+    # return "AgACAgIAAxkBAAIDaWWBu1mpdGm1U6HkwkVU-S9aDlm1AAKQ2DEbOo0QSEU6QeDweqp6AQADAgADeQADMwQ"

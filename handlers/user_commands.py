@@ -1,17 +1,15 @@
-import json
 import logging
 import os
-#
-# import pytesseract # for OCR reading, needs external programm... 
-# https://github.com/tesseract-ocr/tessdoc
 import uuid
 
+import pytesseract
 from aiogram import Bot, F, Router, types
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile, Message
 from aiogram.utils.markdown import hbold
+from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import keyboards.kb as kb
@@ -20,7 +18,8 @@ from logic import aichat as gpt
 from logic import reply_format as f
 from logic.calendar import generate_ics_file
 from logic.states import States
-# from PIL import Image
+from logic.utils import filter_text
+
 # from datetime import datetime
 
 
@@ -28,7 +27,7 @@ router = Router()
 
 
 @router.message(States.adding_event_json, F.text == "Cancel")
-async def show_all_events_handler(
+async def cancel_adding_event_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     await state.clear()
@@ -37,8 +36,18 @@ async def show_all_events_handler(
     await message.answer(answer, reply_markup=keyboard)
 
 
+@router.message(States.find_screenshot, F.text == "Cancel")
+async def cancel_finding_screenshot_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    await state.clear()
+    keyboard = await kb.keyboard_selector(state)
+    answer = "Cancelled searching for screenshots.\n\nI am your personal assistant."
+    await message.answer(answer, reply_markup=keyboard)
+
+
 @router.message(States.adding_note_json, F.text == "Cancel")
-async def show_all_events_handler(
+async def cancel_adding_note_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     await state.clear()
@@ -136,6 +145,21 @@ async def add_new_note_a_handler(message: Message, state: FSMContext, session) -
     await state.clear()
 
 
+@router.message(States.find_screenshot)
+async def find_screenshot_handler(message: Message, state: FSMContext, session) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    result = await db.find_screenshot(session, message.from_user.id, message.text)
+    if len(result) != 0:
+        for res in result:
+            print(f"found photo with file_id == {res[0]=}")
+            await message.answer_photo(
+                res[0], caption="here is your photo", reply_markup=keyboard
+            )
+            # await message.answer(result, reply_markup=keyboard)
+    else:
+        await message.answer("found nothing...", reply_markup=keyboard)
+
+
 @router.message(F.photo)
 async def get_photo_handler(message: Message, state: FSMContext, session, bot) -> None:
     keyboard = await kb.keyboard_selector(state)
@@ -143,11 +167,18 @@ async def get_photo_handler(message: Message, state: FSMContext, session, bot) -
     file_path = f"./screenshots/{uuid.uuid4().int}.jpg"
     await bot.download_file(file_id.file_path, file_path)
     image = Image.open(file_path)
-    # recognized_text = pytesseract.image_to_string(image)
-    recognized_text = "uncomment pytesseract.image_to_string(image)"
+    caption = message.caption
+    recognized_text = pytesseract.image_to_string(image)
+    filtered_text = filter_text(recognized_text)
+    screenshot_id = await db.add_new_screenshot(
+        session, message.from_user.id, file_id.file_id, caption, filtered_text
+    )
     await message.answer(
-            f"<i>Photo received with name: {file_path}</i>\nText recognized: {recognized_text}", reply_markup=keyboard, parse_mode=ParseMode.HTML
-        )
+        f"<i>[{screenshot_id}] Photo received with name: {file_path}</i>\nCaption is: {caption}\nText recognized:\n\n{filtered_text}",
+        reply_markup=keyboard,
+        parse_mode=ParseMode.HTML,
+    )
+    image.close()
     os.remove(file_path)
 
 
@@ -163,6 +194,21 @@ async def show_all_events_handler(message: Message, state: FSMContext, session) 
         await message.answer(
             "<i>No events found.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
         )
+
+
+@router.message(F.text == "Add screenshot")
+async def add_screenshot_handler(message: Message, state: FSMContext, session) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer(
+        "You can send me your screenshots anytime.", reply_markup=keyboard
+    )
+
+
+@router.message(F.text == "Find screenshot")
+async def find_screenshot_handler(message: Message, state: FSMContext, session) -> None:
+    await state.set_state(States.find_screenshot)
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("Enter text from screenshot:", reply_markup=keyboard)
 
 
 @router.message(F.text == "Show all notes")

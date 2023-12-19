@@ -7,6 +7,7 @@ async def keyboard_selector(state):
     if (
         state_name == "States:adding_event_json"
         or state_name == "States:adding_note_json"
+        or state_name == "States:find_screenshot"
     ):
         keyboard = cancel()
     else:
@@ -21,6 +22,8 @@ def core_kb() -> ReplyKeyboardBuilder:
     kb.button(text="Show all events")
     kb.button(text="Write new note")
     kb.button(text="Show all notes")
+    kb.button(text="Add screenshot")
+    kb.button(text="Find screenshot")
     kb.adjust(2)
     return kb
 

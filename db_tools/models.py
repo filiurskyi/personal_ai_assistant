@@ -65,12 +65,12 @@ class Setting(Base):
             column.name: getattr(self, column.name) for column in self.__table__.columns
         }
 
-class Screenshots(Base):
+
+class Screenshot(Base):
     __tablename__ = "screenshots"
     id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     user_tg_id = Column(Integer, ForeignKey("users.id"))
     file_id = Column(String(100))
-    # file_name = Column(Integer)
     hashtags = Column(Text)
     caption = Column(Text)
     ocr_text = Column(Text)
