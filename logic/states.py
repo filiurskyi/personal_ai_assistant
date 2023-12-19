@@ -5,3 +5,4 @@ class States(StatesGroup):
     adding_event_json = State()
     adding_note_json = State()
     find_screenshot = State()
+    delete_screenshot = State()

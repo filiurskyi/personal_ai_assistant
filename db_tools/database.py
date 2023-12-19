@@ -1,7 +1,7 @@
 import datetime
 
 import arrow
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 from db_tools.models import Event, Note, Screenshot, Setting, User
 
@@ -152,10 +152,23 @@ async def add_new_screenshot(session, tg_id, file_id, caption, ocr_text) -> int:
 
 async def find_screenshot(session, tg_id, prompt):
     screenshot_id = await session.execute(
-        select(Screenshot.file_id).filter(
-            Screenshot.ocr_text.like("%" + prompt.lower() + "%")
-        )
-        # .where(Screenshot.user_tg_id == tg_id)
+        select(Screenshot.id, Screenshot.file_id)
+        .filter(Screenshot.ocr_text
+                .like("%" + prompt.lower() + "%"))
+        .where(Screenshot.user_tg_id == tg_id)
     )
     return screenshot_id.all()
-    # return "AgACAgIAAxkBAAIDaWWBu1mpdGm1U6HkwkVU-S9aDlm1AAKQ2DEbOo0QSEU6QeDweqp6AQADAgADeQADMwQ"
+
+
+async def delete_screenshot(session, tg_id, screenshot_id) -> bool:
+    screenshot_query = await session.execute(
+        select(Screenshot)
+        .where(and_(Screenshot.id == screenshot_id, Screenshot.user_tg_id == tg_id))
+    )
+    screenshot = screenshot_query.scalar()
+    if screenshot is not None:
+        await session.delete(screenshot)
+        await session.commit()
+        return True
+    else:
+        return False

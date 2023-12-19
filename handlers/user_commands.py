@@ -46,6 +46,35 @@ async def cancel_finding_screenshot_handler(
     await message.answer(answer, reply_markup=keyboard)
 
 
+@router.message(States.find_screenshot, F.text == "Delete screenshot by id")
+async def cancel_finding_screenshot_handler(message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await state.set_state(States.delete_screenshot)
+    await message.answer(
+        "Now send my id of screenshot you want to delete. It is in brackets like this: [id]",
+        reply_markup=keyboard
+    )
+
+
+@router.message(States.delete_screenshot)
+async def cancel_finding_screenshot_handler(message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    await state.set_state(States.find_screenshot)
+    keyboard = await kb.keyboard_selector(state)
+    delete_successful = await db.delete_screenshot(session, message.from_user.id, message.text)
+    if delete_successful:
+        await message.answer(
+            f"screenshot with id[{message.text}] deleted",
+            reply_markup=keyboard
+        )
+    else:
+        await message.answer(
+            f"screenshot with id[{message.text}] not found",
+            reply_markup=keyboard
+        )
+
+
 @router.message(States.adding_note_json, F.text == "Cancel")
 async def cancel_adding_note_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
@@ -153,7 +182,7 @@ async def find_screenshot_handler(message: Message, state: FSMContext, session) 
         for res in result:
             print(f"found photo with file_id == {res[0]=}")
             await message.answer_photo(
-                res[0], caption="here is your photo", reply_markup=keyboard
+                res[1], caption=f"[{res[0]}]\nhere is your photo", reply_markup=keyboard
             )
             # await message.answer(result, reply_markup=keyboard)
     else:
