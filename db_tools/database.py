@@ -135,14 +135,18 @@ async def show_one_note(session, note_id):
 
 
 async def add_new_screenshot(session, tg_id, file_id, caption, ocr_text) -> int:
-    tags = [tag for tag in caption.split() if tag.startswith("#")]
-    hashtags = " ".join(tags)
+    if caption is not None:
+        tags = [tag for tag in caption.split() if tag.startswith("#")]
+        hashtags = " ".join(tags)
+        caption = caption.lower()
+    else:
+        hashtags = None
     screenshot = Screenshot(
         user_tg_id=tg_id,
         file_id=file_id,
         hashtags=hashtags,
-        caption=caption.lower(),
-        ocr_text=ocr_text.lower(),
+        caption=caption,
+        ocr_text=ocr_text.lower() if ocr_text is not None else None,
         created=datetime.datetime.now(),
     )
     session.add(screenshot)

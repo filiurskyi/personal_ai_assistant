@@ -2,7 +2,6 @@ import logging
 import os
 import uuid
 
-import pytesseract
 from aiogram import Bot, F, Router, types
 from aiogram.enums import ParseMode
 from aiogram.filters import Command
@@ -18,7 +17,7 @@ from logic import aichat as gpt
 from logic import reply_format as f
 from logic.calendar import generate_ics_file
 from logic.states import States
-from logic.utils import filter_text
+from logic.utils import ocr_image
 
 # from datetime import datetime
 
@@ -43,6 +42,16 @@ async def cancel_finding_screenshot_handler(
     await state.clear()
     keyboard = await kb.keyboard_selector(state)
     answer = "Cancelled searching for screenshots.\n\nI am your personal assistant."
+    await message.answer(answer, reply_markup=keyboard)
+
+
+@router.message(States.delete_screenshot, F.text == "Cancel")
+async def cancel_finding_screenshot_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+) -> None:
+    await state.clear()
+    keyboard = await kb.keyboard_selector(state)
+    answer = "Cancelled deleting screenshots.\n\nI am your personal assistant."
     await message.answer(answer, reply_markup=keyboard)
 
 
@@ -197,8 +206,7 @@ async def get_photo_handler(message: Message, state: FSMContext, session, bot) -
     await bot.download_file(file_id.file_path, file_path)
     image = Image.open(file_path)
     caption = message.caption
-    recognized_text = pytesseract.image_to_string(image)
-    filtered_text = filter_text(recognized_text)
+    filtered_text = ocr_image(image)
     screenshot_id = await db.add_new_screenshot(
         session, message.from_user.id, file_id.file_id, caption, filtered_text
     )
