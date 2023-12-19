@@ -1,7 +1,7 @@
 import datetime
 
 import arrow
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, or_
 
 from db_tools.models import Event, Note, Screenshot, Setting, User
 
@@ -153,8 +153,11 @@ async def add_new_screenshot(session, tg_id, file_id, caption, ocr_text) -> int:
 async def find_screenshot(session, tg_id, prompt):
     screenshot_id = await session.execute(
         select(Screenshot.id, Screenshot.file_id)
-        .filter(Screenshot.ocr_text
-                .like("%" + prompt.lower() + "%"))
+        .filter(or_(
+            Screenshot.ocr_text.like("%" + prompt.lower() + "%"),
+            Screenshot.hashtags.like("%" + prompt.lower() + "%"),
+            Screenshot.caption.like("%" + prompt.lower() + "%"),
+        ))
         .where(Screenshot.user_tg_id == tg_id)
     )
     return screenshot_id.all()
