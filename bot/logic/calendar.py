@@ -4,10 +4,10 @@ from typing import List, Type
 import arrow
 from ics import Calendar, Event
 
-from db_tools.models import Base
+from django.db import models
 
 
-def generate_ics_file(events_list: List[Type[Base]], event_duration=30):
+def generate_ics_file(events_list: List[Type[models.Model]], event_duration=30):
     # Create a Calendar
     cal = Calendar()
 

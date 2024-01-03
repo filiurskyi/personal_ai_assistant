@@ -1,77 +1,91 @@
-from sqlalchemy import Text  # variable length
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer,  # SmallInteger,
-                        String)
-from sqlalchemy.orm import declarative_base, relationship
+import django 
+from pathlib import Path
 
-Base = declarative_base()
+from django.db import models
+from django.conf import settings
+
+# Create your models here.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+databases = {
+            'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "dj-db.sqlite3"
+        }}
+
+settings.configure(DATABASES=databases, INSTALLED_APPS=['db_tools'])
+
+django.setup()
 
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, nullable=False, unique=True)
-    tg_username = Column(String(250), nullable=False)
-    tg_full_name = Column(String(250))
-
-    def as_dict(self):
-        return {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
-        }
-
-
-class Event(Base):
-    __tablename__ = "events"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    ev_datetime = Column(DateTime)
-    ev_title = Column(String(100))
-    ev_tags = Column(Text)
-    ev_text = Column(Text)
+class User(models.Model):
+    user_tg_id = models.IntegerField(unique=True, null=False)
+    tg_username = models.CharField(max_length=250, null=False)
+    tg_full_name = models.CharField(max_length=250, null=True)
 
     def as_dict(self):
         return {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
+            field.name: getattr(self, field.name) for field in self._meta.fields
         }
+    
+    class Meta:
+        app_label = 'db_tools'
 
 
-class Note(Base):
-    __tablename__ = "notes"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    note_title = Column(Text)
-    note_text = Column(Text)
-    note_tags = Column(Text)
+class Event(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ev_datetime = models.DateTimeField()
+    ev_title = models.CharField(max_length=100)
+    ev_tags = models.TextField()
+    ev_text = models.TextField()
 
     def as_dict(self):
         return {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
+            field.name: getattr(self, field.name) for field in self._meta.fields
         }
+    
+    class Meta:
+        app_label = 'db_tools'
+    
 
-
-class Setting(Base):
-    __tablename__ = "settings"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    user_timezone = Column(String(20))  # Europe/Berlin etc...
-    ai_platform = Column(String(50))
-    ai_api_key = Column(String(100))
-    calendar_event_duration = Column(Integer)
+class Note(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    note_title = models.TextField()
+    note_text = models.TextField()
+    note_tags = models.TextField()
 
     def as_dict(self):
         return {
-            column.name: getattr(self, column.name) for column in self.__table__.columns
+            field.name: getattr(self, field.name) for field in self._meta.fields
         }
 
+    class Meta:
+        app_label = 'db_tools'
 
-class Screenshot(Base):
-    __tablename__ = "screenshots"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    file_id = Column(String(100))
-    hashtags = Column(Text)
-    caption = Column(Text)
-    ocr_text = Column(Text)
-    created = Column(DateTime)
+
+class Setting(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_timezone = models.CharField(max_length=20)  # Europe/Berlin etc...
+    ai_platform = models.CharField(max_length=50)
+    ai_api_key = models.CharField(max_length=50)
+
+    class Meta:
+        app_label = 'db_tools'
+
+
+class Screenshot(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file_id = models.CharField(max_length=100)
+    hashtags = models.TextField()
+    caption = models.TextField()
+    ocr_text = models.TextField()
+    created = models.DateTimeField()
+
+    def as_dict(self):
+        return {
+            field.name: getattr(self, field.name) for field in self._meta.fields
+        }
+    
+    class Meta:
+        app_label = 'db_tools'
+
