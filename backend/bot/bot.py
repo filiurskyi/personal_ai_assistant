@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
                                     create_async_engine)
 
-from handlers import user_commands
-from middlewares.db import DbSessionMiddleware
+from .handlers import user_commands
+from .middlewares.db import DbSessionMiddleware
 
 load_dotenv()
 

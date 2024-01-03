@@ -1,10 +1,14 @@
 import logging
 from datetime import datetime
 from pprint import pprint
+from os import getenv
+from dotenv import load_dotenv
 
 from openai import OpenAI
 
-from bot import OPENAI_API_KEY
+load_dotenv()
+OPENAI_API_KEY = getenv("OPENAI_API_KEY")
+
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 

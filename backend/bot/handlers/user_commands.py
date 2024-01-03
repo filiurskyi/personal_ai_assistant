@@ -11,13 +11,13 @@ from aiogram.utils.markdown import hbold
 from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import keyboards.kb as kb
-from db_tools import database as db
-from logic import aichat as gpt
-from logic import reply_format as f
-from logic.calendar import generate_ics_file
-from logic.states import States
-from logic.utils import ocr_image
+from bot.keyboards import kb
+from bot.db_tools import database as db
+from bot.logic import aichat as gpt
+from bot.logic import reply_format as f
+from bot.logic.calendar import generate_ics_file
+from bot.logic.states import States
+from bot.logic.utils import ocr_image
 
 # from datetime import datetime
 

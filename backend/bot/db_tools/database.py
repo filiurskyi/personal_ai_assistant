@@ -3,7 +3,7 @@ import datetime
 import arrow
 from sqlalchemy import select, and_, or_
 
-from db_tools.models import Event, Note, Screenshot, Setting, User
+from bot.db_tools.models import Event, Note, Screenshot, Setting, User
 
 
 async def old_user_check(session, tg_id) -> bool:

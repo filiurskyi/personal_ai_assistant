@@ -44,7 +44,7 @@ class Setting(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_timezone = models.CharField(max_length=20)  # Europe/Berlin etc...
     ai_platform = models.CharField(max_length=50)
-    ai_api_key = models.CharFiel
+    ai_api_key = models.CharField(max_length=50)
 
 
 class Screenshot(models.Model):

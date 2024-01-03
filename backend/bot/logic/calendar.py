@@ -4,7 +4,7 @@ from typing import List, Type
 import arrow
 from ics import Calendar, Event
 
-from db_tools.models import Base
+from bot.db_tools.models import Base
 
 
 def generate_ics_file(events_list: List[Type[Base]], event_duration=30):

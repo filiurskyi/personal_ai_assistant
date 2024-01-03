@@ -1,0 +1,12 @@
+<!-- dashboard.html -->
+<form method="post" action="{% url 'dashboard' %}">
+    {% csrf_token %}
+    <button type="submit" name="action" value="run">Run</button>
+    <button type="submit" name="action" value="restart">Restart</button>
+    <button type="submit" name="action" value="stop">Stop</button>
+    <button type="submit" name="action" value="terminate">Terminate</button>
+</form>
+
+<div>
+    {{ text }}
+</div>

@@ -3,7 +3,7 @@ import logging
 
 import arrow
 
-from db_tools import database as db
+from bot.db_tools import database as db
 
 
 async def user_context_handler(user_input: str, user_id, session):

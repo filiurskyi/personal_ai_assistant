@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "dashboard",
+    "user",
+    "landing",
 ]
 
 MIDDLEWARE = [
@@ -76,7 +79,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR.parent / 'bot' / 'db.sqlite3',
+        'NAME': BASE_DIR / 'bot' / 'db.sqlite3',
     }
 }
 
@@ -121,3 +124,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Celery configuration
+CELERY_BROKER_URL = 'redis://:K1I1YJx4CF7Y51OAyZPOiC7R8dDxZCRA@redis-19118.c304.europe-west1-2.gce.cloud.redislabs.com:19118/0'
+CELERY_RESULT_BACKEND = 'redis://:K1I1YJx4CF7Y51OAyZPOiC7R8dDxZCRA@redis-19118.c304.europe-west1-2.gce.cloud.redislabs.com:19118/0'
