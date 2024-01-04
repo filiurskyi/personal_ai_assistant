@@ -10,26 +10,22 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize Jinja2 templates
 templates = Jinja2Templates(directory="templates")
-
+book = []
 
 # Define the main route for the landing page
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
-
-# Define the main route for the feedback form
-@app.get("/book", response_class=HTMLResponse)
-async def read_book(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request, "book": book})
 
 
 # Handle HTMX request to submit feedback
-@app.post("/submit-feedback", response_class=JSONResponse)
+@app.post("/submit", response_class=JSONResponse)
 async def submit_feedback(request: Request):
     form_data = await request.form()
     name = form_data.get("name")
     feedback = form_data.get("feedback")
-
+    data = {"name": name, "feedback": feedback}
+    book.append(data)
     # Process feedback (you can save it to a database, etc.)
     # For simplicity, we just return a JSON response with the submitted data.
-    return {"name": name, "feedback": feedback}
+    return templates.TemplateResponse("form.html", {"request": request, "book": book})

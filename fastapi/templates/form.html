@@ -1,0 +1,16 @@
+<div id="feedback-results">
+    <form id="feedback-form" hx-post="/submit" hx-target="#feedback-results" hx-swap="innerHTML">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="feedback">Feedback:</label>
+        <textarea id="feedback" name="feedback" rows="4" required></textarea>
+
+        <button type="submit">
+            Submit Feedback
+        </button>
+    </form>
+    {% for item in book %}
+    <div>{{ item }}</div>
+    {% endfor %}
+</div>

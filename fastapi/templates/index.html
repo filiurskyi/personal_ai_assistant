@@ -13,17 +13,7 @@
 
     <br>
 
-    <form id="feedback-form" hx-post="/submit-feedback">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-
-        <label for="feedback">Feedback:</label>
-        <textarea id="feedback" name="feedback" rows="4" required></textarea>
-
-        <button type="submit" hx-target="#feedback-results" hx-swap="outerHTML">
-            Submit Feedback
-        </button>
-    </form>
+    {% include "form.html" %}
 </body>
 
 </html>
