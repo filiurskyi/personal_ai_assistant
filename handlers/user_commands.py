@@ -98,10 +98,17 @@ async def cancel_adding_note_handler(
 
 
 @router.message(Command("state"))
-async def command_start_handler(message: Message, state: FSMContext) -> None:
+async def command_state_handler(message: Message, state: FSMContext) -> None:
     stt = await state.get_state()
     msg = f"MSG from {message.from_user.id}\nCurrent state is : " + str(stt)
     logging.info(msg)
+
+
+@router.message(Command("web"))
+async def command_web_handler(message: Message, state: FSMContext) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer("Replying with web link: https://t.me/personalassistant_ai_test_bot/dashboard", reply_markup=keyboard)
+    
 
 
 @router.message(Command("get_ics"))
