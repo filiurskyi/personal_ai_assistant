@@ -10,7 +10,13 @@
             Submit Feedback
         </button>
     </form>
+
     {% for item in book %}
-    <div>{{ item }}</div>
+        <div>
+            {{ item.name }}: {{ item.feedback }}
+            <button hx-post="/delete/{{ item.name }}" hx-target="#feedback-results" hx-swap="outerHTML">
+                Delete
+            </button>
+        </div>
     {% endfor %}
 </div>
