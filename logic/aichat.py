@@ -19,7 +19,7 @@ def simple_query(user_query):
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}. You answer in language of user prompt.".format(dt=datetime.now()),
+                           "improvements. Today is {dt}. You write in same language as user prompts.".format(dt=datetime.now()),
             },
             {
                 "role": "system",
@@ -86,7 +86,7 @@ def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}. You answer in language of user prompt.".format(dt=datetime.now()),
+                           "improvements. Today is {dt}. You write in same language as user prompts.".format(dt=datetime.now()),
             },
             {
                 "role": "system",
