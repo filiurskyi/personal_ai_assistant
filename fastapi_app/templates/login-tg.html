@@ -1,0 +1,43 @@
+<!-- child_template.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Home - My Website{% endblock %}
+
+{% block header %}Login-tg{% endblock %}
+
+{% block content %}
+<div id="initDataDisplay"></div>
+
+<script>
+    // Access the Telegram.WebApp object
+    var telegramWebApp = window.Telegram.WebApp;
+
+    // Add a DOMContentLoaded event listener to ensure the HTML document is fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Access the initData property
+        var initData = telegramWebApp.initData;
+
+        // Display initData in a div as plain text, or show empty string if initData is null
+        var initDataDisplay = document.getElementById('initDataDisplay');
+        initDataDisplay.innerText = initData === null ? '' : initData;
+
+        // Send POST request to /login-tg with initData
+        fetch('/login-tg', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ initData: initData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response if needed
+            console.log('Login response:', data);
+        })
+        .catch(error => {
+            console.error('Error during login:', error);
+        });
+    });
+</script>
+{% endblock %}

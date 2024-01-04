@@ -1,0 +1,13 @@
+<!-- child_template.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Home - My Website{% endblock %}
+
+{% block header %}Events{% endblock %}
+
+{% block content %}
+    {% for event in events %}
+<p>{{ event.ev_title }}</p>
+{% endfor %}
+{% endblock %}
