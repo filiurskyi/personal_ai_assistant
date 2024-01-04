@@ -19,7 +19,7 @@ def simple_query(user_query):
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                "improvements. Today is {dt}".format(dt=datetime.now()),
+                           "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
@@ -43,18 +43,18 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                "improvements. Today is {dt}".format(dt=datetime.now()),
+                           "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
                 "content": f"If user_context = create_new_event: Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
-                f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
-                f"description of event'}}",
+                           f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
+                           f"description of event'}}",
             },
             {
                 "role": "system",
                 "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title',"
-                f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
+                           f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
             },
             {
                 "role": "user",
@@ -69,24 +69,26 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
 
 
 def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
+    context_event = f"Format reply as json: {{'user_context': {contexts}, 'ev_title':'title', 'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed description of event'}}"
+    context_note = f"Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title', 'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}"
+    if contexts == "create_new_event":
+        context = context_event
+    elif contexts == "create_new_note":
+        context = context_note
+    else:
+        context = "unknown context"
+
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                "improvements. Today is {dt}".format(dt=datetime.now()),
+                           "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
-                "content": f"If user_context = create_new_event: Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
-                f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
-                f"description of event'}}",
-            },
-            {
-                "role": "system",
-                "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title',"
-                f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
+                "content": context,
             },
             {
                 "role": "user",

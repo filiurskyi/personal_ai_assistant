@@ -5,4 +5,7 @@
     <orderEntry type="jdk" jdkName="Poetry (personalassistant_ai_bot)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="c2c90be2-feca-4974-bbf4-42d9a39204b0" />
+  </component>
 </module>
