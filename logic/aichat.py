@@ -69,8 +69,10 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
 
 
 def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
-    context_event = f"Format reply as json: {{'user_context': {contexts}, 'ev_title':'title', 'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed description of event'}}"
-    context_note = f"Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title', 'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}"
+    context_event = (f"Fill event json using template: {{'user_context': {contexts}, 'ev_title':'title', 'ev_datetime': "
+                     f"'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed description of event'}}")
+    context_note = (f"Fill note json using template: {{'user_context': {contexts}, 'nt_title':'note title', 'nt_text': "
+                    f"'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}")
     if contexts == "create_new_event":
         context = context_event
     elif contexts == "create_new_note":
