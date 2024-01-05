@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Notes{% endblock %}
+
+{% block header %}Dashboard - Notes{% endblock %}
+
+{% block content %}
+    {% for note in notes %}
+<p>{{ note.note_title }}</p>
+<p>{{ note.note_text }}</p>
+<p>{{ note.note_tags }}</p>
+{% endfor %}
+{% endblock %}

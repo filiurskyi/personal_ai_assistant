@@ -20,11 +20,20 @@ app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
 # Initialize Jinja2 templates
 templates = Jinja2Templates(directory="fastapi_app/templates")
-book = [{'name': '1', 'feedback': 'r3  '}, {'name': '2', 'feedback': 'dsa fsad fs'}]
+
+
 DB_URI = "sqlite+aiosqlite:///database.db/"
 
 
+
+
 @app.get("/", response_class=HTMLResponse)
+async def list_events(request: Request):
+
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+@app.get("/events", response_class=HTMLResponse)
 async def list_events(request: Request):
     engine = create_async_engine(DB_URI, echo=False)
     sessionmaker = async_sessionmaker(
@@ -34,6 +43,17 @@ async def list_events(request: Request):
         events = await show_all_events(session, 306067192)
 
     return templates.TemplateResponse("events.html", {"request": request, "events": events})
+
+
+@app.get("/notes", response_class=HTMLResponse)
+async def list_notes(request: Request):
+    engine = create_async_engine(DB_URI, echo=False)
+    sessionmaker = async_sessionmaker(
+        engine, expire_on_commit=False, class_=AsyncSession
+    )
+    async with sessionmaker() as session:
+        notes = await show_all_notes(session, 306067192)
+    return templates.TemplateResponse("notes.html", {"request": request, "notes": notes})
 
 
 # @app.post("/login", response_class=HTMLResponse)
@@ -53,11 +73,12 @@ async def login_tg(request: Request):
     return templates.TemplateResponse("login-tg.html", {"request": request})
 
 
-@app.post("/login-tg", response_class=HTMLResponse)
-async def login_tg(request: Request):
+@app.get("/login", response_class=HTMLResponse)
+async def login(request: Request):
     try:
         data = await request.json()
         print(" post ", parse_qs(unquote(data.get("initData"))))
     except Exception as e:
         print(e)
-    return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    return templates.TemplateResponse("login.html", {"request": request})
+    # return RedirectResponse(url="login")

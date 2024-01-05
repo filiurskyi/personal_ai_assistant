@@ -1,13 +1,14 @@
-<!-- child_template.html -->
-
 {% extends "base.html" %}
 
-{% block title %}Home - My Website{% endblock %}
+{% block title %}Dashboard - Events{% endblock %}
 
-{% block header %}Events{% endblock %}
+{% block header %}Dashboard - Events{% endblock %}
 
 {% block content %}
     {% for event in events %}
+<p>{{ event.ev_datetime }}</p>
 <p>{{ event.ev_title }}</p>
+<p>{{ event.ev_tags }}</p>
+<p>{{ event.ev_text }}</p>
 {% endfor %}
 {% endblock %}

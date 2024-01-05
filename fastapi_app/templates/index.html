@@ -1,0 +1,13 @@
+<!-- child_template.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block header %}Welcome to Dashboard{% endblock %}
+
+{% block content %}
+    {% for event in events %}
+<p>{{ event.ev_title }}</p>
+{% endfor %}
+{% endblock %}
