@@ -56,29 +56,18 @@ async def list_notes(request: Request):
     return templates.TemplateResponse("notes.html", {"request": request, "notes": notes})
 
 
-# @app.post("/login", response_class=HTMLResponse)
-# async def login_tg(request: Request):
-#     data = await request.json()
-#     print(parse_qs(unquote(data.get("initData"))))
-#     return templates.TemplateResponse("events.html", {"request": request})
-
-
 @app.get("/login-tg", response_class=HTMLResponse)
 async def login_tg(request: Request):
     try:
         data = await request.json()
         print(" get ", parse_qs(unquote(data.get("initData"))))
     except Exception as e:
-        print(e)
+        print("Exception in /login-tg", e)
     return templates.TemplateResponse("login-tg.html", {"request": request})
 
 
 @app.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
-    try:
-        data = await request.json()
-        print(" post ", parse_qs(unquote(data.get("initData"))))
-    except Exception as e:
-        print(e)
+
     return templates.TemplateResponse("login.html", {"request": request})
     # return RedirectResponse(url="login")
