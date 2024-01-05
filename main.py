@@ -14,14 +14,10 @@ from bot.handlers.user_commands import router
 from bot.middlewares.db import DbSessionMiddleware
 
 
-
-
 async def scheduler():
     while True:
         await asyncio.sleep(60)
         logging.info("scheduled 60 sec task...")
-
-
 
 
 async def main() -> None:

@@ -1,6 +1,7 @@
 import re
-from PIL import Image
+
 import pytesseract
+from PIL import Image
 
 LANGS = ["rus", "ukr", "eng"]
 

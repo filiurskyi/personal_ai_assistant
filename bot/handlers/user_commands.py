@@ -56,31 +56,33 @@ async def cancel_finding_screenshot_handler(
 
 
 @router.message(States.find_screenshot, F.text == "Delete screenshot by id")
-async def cancel_finding_screenshot_handler(message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+async def cancel_finding_screenshot_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     keyboard = await kb.keyboard_selector(state)
     await state.set_state(States.delete_screenshot)
     await message.answer(
         "Now send my id of screenshot you want to delete. It is in brackets like this: [id]",
-        reply_markup=keyboard
+        reply_markup=keyboard,
     )
 
 
 @router.message(States.delete_screenshot)
-async def cancel_finding_screenshot_handler(message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+async def cancel_finding_screenshot_handler(
+    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     await state.set_state(States.find_screenshot)
     keyboard = await kb.keyboard_selector(state)
-    delete_successful = await db.delete_screenshot(session, message.from_user.id, message.text)
+    delete_successful = await db.delete_screenshot(
+        session, message.from_user.id, message.text
+    )
     if delete_successful:
         await message.answer(
-            f"screenshot with id[{message.text}] deleted",
-            reply_markup=keyboard
+            f"screenshot with id[{message.text}] deleted", reply_markup=keyboard
         )
     else:
         await message.answer(
-            f"screenshot with id[{message.text}] not found",
-            reply_markup=keyboard
+            f"screenshot with id[{message.text}] not found", reply_markup=keyboard
         )
 
 
@@ -107,8 +109,10 @@ async def command_state_handler(message: Message, state: FSMContext) -> None:
 @router.message(Command("web"))
 async def command_web_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    await message.answer("Replying with web link: https://t.me/personalassistant_ai_test_bot/dashboard", reply_markup=keyboard)
-    
+    await message.answer(
+        "Replying with web link: https://t.me/personalassistant_ai_test_bot/dashboard",
+        reply_markup=keyboard,
+    )
 
 
 @router.message(Command("get_ics"))

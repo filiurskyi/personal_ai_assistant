@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime
+from os import getenv
 from pprint import pprint
+
 from dotenv import load_dotenv
 from openai import OpenAI
-from os import getenv
 
 # from bot.main import OPENAI_API_KEY
 load_dotenv()
@@ -21,7 +22,9 @@ def simple_query(user_query):
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}. You write in same language as user prompts.".format(dt=datetime.now()),
+                "improvements. Today is {dt}. You write in same language as user prompts.".format(
+                    dt=datetime.now()
+                ),
             },
             {
                 "role": "system",
@@ -45,18 +48,18 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}".format(dt=datetime.now()),
+                "improvements. Today is {dt}".format(dt=datetime.now()),
             },
             {
                 "role": "system",
                 "content": f"If user_context = create_new_event: Format reply as json: {{'user_context': {contexts}, 'ev_title':'title',"
-                           f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
-                           f"description of event'}}",
+                f"'ev_datetime': 'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed "
+                f"description of event'}}",
             },
             {
                 "role": "system",
                 "content": f"If user_context = create_new_note: Format reply as json: {{'user_context': {contexts}, 'nt_title':'note title',"
-                           f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
+                f"'nt_text': 'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}",
             },
             {
                 "role": "user",
@@ -71,10 +74,14 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
 
 
 def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
-    context_event = (f"Fill event json using template: {{'user_context': {contexts}, 'ev_title':'title', 'ev_datetime': "
-                     f"'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed description of event'}}")
-    context_note = (f"Fill note json using template: {{'user_context': {contexts}, 'nt_title':'note title', 'nt_text': "
-                    f"'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}")
+    context_event = (
+        f"Fill event json using template: {{'user_context': {contexts}, 'ev_title':'title', 'ev_datetime': "
+        f"'dd.mm.yyyy hh:mm','ev_tags': '#tag1 #tag2 #tag3','ev_text': 'detailed description of event'}}"
+    )
+    context_note = (
+        f"Fill note json using template: {{'user_context': {contexts}, 'nt_title':'note title', 'nt_text': "
+        f"'formatted body text of note', 'nt_tags': '#tag1 #tag2 #tag3'}}"
+    )
     if contexts == "create_new_event":
         context = context_event
     elif contexts == "create_new_note":
@@ -88,7 +95,9 @@ def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
             {
                 "role": "system",
                 "content": "You are a personal assistant, skilled in life planning, calendar management and personal "
-                           "improvements. Today is {dt}. You write in same language as user prompts.".format(dt=datetime.now()),
+                "improvements. Today is {dt}. You write in same language as user prompts.".format(
+                    dt=datetime.now()
+                ),
             },
             {
                 "role": "system",

@@ -1,11 +1,34 @@
 <!-- child_template.html -->
 
-{% extends "base.html" %}
+{% extends "base.html" %} {% block title %}Dashboard - Login{% endblock %} {%
+block header %}Dashboard - Login{% endblock %} {% block content %}
+<div class="max-w-md w-full p-6 bg-white rounded-md shadow-md">
+  <h2 class="text-2xl font-semibold mb-6">Login</h2>
 
-{% block title %}Dashboard - Login{% endblock %}
+  <!-- Login Form with HTMX -->
+  <form action="/login" method="post" hx-post="/login" hx-trigger="submit">
+    <!-- Username Field -->
+    <div class="mb-4">
+      <label for="username" class="block text-sm font-medium text-gray-600"
+        >Username</label
+      >
+      <input
+        type="text"
+        id="username"
+        name="username"
+        class="mt-1 p-2 w-full border rounded-md"
+      />
+    </div>
 
-{% block header %}Dashboard - Login{% endblock %}
-
-{% block content %}
-
+    <!-- Submit Button -->
+    <div class="text-center">
+      <button
+        type="submit"
+        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+      >
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
 {% endblock %}
