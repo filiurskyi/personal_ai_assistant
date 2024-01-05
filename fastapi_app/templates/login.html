@@ -2,33 +2,35 @@
 
 {% extends "base.html" %} {% block title %}Dashboard - Login{% endblock %} {%
 block header %}Dashboard - Login{% endblock %} {% block content %}
-<div class="max-w-md w-full p-6 bg-white rounded-md shadow-md">
-  <h2 class="text-2xl font-semibold mb-6">Login</h2>
-
-  <!-- Login Form with HTMX -->
-  <form action="/login" method="post" hx-post="/login" hx-trigger="submit">
+<div class="container mx-auto mt-8">
+  <!-- htmx Form -->
+  <form
+    id="loginForm"
+    class="max-w-md mx-auto bg-white p-8 rounded shadow-md"
+    id="usernameForm"
+  >
     <!-- Username Field -->
     <div class="mb-4">
-      <label for="username" class="block text-sm font-medium text-gray-600"
-        >Username</label
+      <label for="username" class="block text-gray-700 text-sm font-bold mb-2"
+        >Username:</label
       >
       <input
         type="text"
         id="username"
         name="username"
-        class="mt-1 p-2 w-full border rounded-md"
+        class="w-full p-2 border border-gray-300 rounded"
       />
     </div>
-
-    <!-- Submit Button -->
-    <div class="text-center">
-      <button
-        type="submit"
-        class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
-      >
-        Submit
-      </button>
-    </div>
+    <button
+      type="submit"
+      hx-post="/token"
+      hx-trigger="click"
+      hx-swap="none"
+      class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+    >
+      Login
+    </button>
   </form>
 </div>
+
 {% endblock %}

@@ -8,7 +8,6 @@ BASE_DIR = Path(__file__).parent
 
 STATIC_PATH = BASE_DIR / "static"
 TEMPLATES = BASE_DIR / "templates"
-print(TEMPLATES)
 templates = Jinja2Templates(directory=TEMPLATES)
 
 router = APIRouter()
