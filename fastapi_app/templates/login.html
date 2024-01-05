@@ -7,44 +7,5 @@
 {% block header %}Dashboard - Login{% endblock %}
 
 {% block content %}
-<!--<div id="initDataDisplay"></div>-->
 
-<!--&lt;!&ndash; Create a login button &ndash;&gt;-->
-<!--<button id="loginButton">Login</button>-->
-
-<!--<script>-->
-<!--    // Access the Telegram.WebApp object-->
-<!--    var telegramWebApp = window.Telegram.WebApp;-->
-
-<!--    // Add a DOMContentLoaded event listener to ensure the HTML document is fully loaded-->
-<!--    document.addEventListener('DOMContentLoaded', function () {-->
-<!--        // Access the initData property-->
-<!--        var initData = telegramWebApp.initData;-->
-
-<!--        // Display initData in a div as plain text, or show empty string if initData is null-->
-<!--        var initDataDisplay = document.getElementById('initDataDisplay');-->
-<!--        initDataDisplay.innerText = initData === null ? '' : initData;-->
-
-<!--        // Add a click event listener to the login button-->
-<!--        var loginButton = document.getElementById('loginButton');-->
-<!--        loginButton.addEventListener('click', function () {-->
-<!--            // Send POST request to /login with initData-->
-<!--            fetch('/login', {-->
-<!--                method: 'POST',-->
-<!--                headers: {-->
-<!--                    'Content-Type': 'application/json',-->
-<!--                },-->
-<!--                body: JSON.stringify({ initData: initData }),-->
-<!--            })-->
-<!--            .then(response => response.json())-->
-<!--            .then(data => {-->
-<!--                // Handle the response if needed-->
-<!--                console.log('Login response:', data);-->
-<!--            })-->
-<!--            .catch(error => {-->
-<!--                console.error('Error during login:', error);-->
-<!--            });-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
 {% endblock %}
