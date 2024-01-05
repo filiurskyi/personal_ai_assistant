@@ -1,12 +1,14 @@
 import logging
 from datetime import datetime
 from pprint import pprint
-
+from dotenv import load_dotenv
 from openai import OpenAI
+from os import getenv
 
 # from bot.main import OPENAI_API_KEY
-
-# client = OpenAI(api_key=OPENAI_API_KEY)
+load_dotenv()
+OPENAI_API_KEY = getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 USER_CONTEXTS = "'create_new_event'|'create_new_note'"
 
