@@ -2,7 +2,7 @@ import datetime
 
 import arrow
 from sqlalchemy import and_, or_, select
-
+from db.conf import OPENAI_API_KEY
 from db.models import Event, Note, Screenshot, Setting, User
 
 
@@ -26,7 +26,7 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
             user_tg_id=tg_id,
             user_timezone="Europe/Berlin",
             ai_platform="openai",
-            ai_api_key=None,
+            ai_api_key=,
             calendar_event_duration=30,
         )
         session.add(user)
