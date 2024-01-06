@@ -26,7 +26,7 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
             user_tg_id=tg_id,
             user_timezone="Europe/Berlin",
             ai_platform="openai",
-            ai_api_key=,
+            ai_api_key=OPENAI_API_KEY,
             calendar_event_duration=30,
         )
         session.add(user)
