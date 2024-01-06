@@ -6,7 +6,8 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-# from bot import DB_URI as url
+
+from db.conf import DB_URI
 from db.models import Base
 
 # this is the Alembic Config object, which provides
@@ -18,7 +19,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", "sqlite+aiosqlite:///database.db/")
+config.set_main_option("sqlalchemy.url", DB_URI)
 
 
 # add your model's MetaData object here

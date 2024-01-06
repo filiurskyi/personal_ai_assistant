@@ -106,8 +106,10 @@ async def del_all_notes(session, tg_id) -> None:
 
 async def show_all_events(session, tg_id) -> list:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    user_id = res.scalar().id
+    if not res.scalar():
+        return []
 
+    user_id = res.scalar().id
     events = await session.execute(select(Event).filter_by(user_tg_id=user_id))
     events = events.fetchall()
     events_list = [event[0] for event in events]
@@ -116,8 +118,10 @@ async def show_all_events(session, tg_id) -> list:
 
 async def show_all_notes(session, tg_id) -> list:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
-    user_id = res.scalar().id
+    if not res.scalar():
+        return []
 
+    user_id = res.scalar().id
     notes = await session.execute(select(Note).filter_by(user_tg_id=user_id))
     notes = notes.fetchall()
     notes_list = [event[0] for event in notes]
@@ -182,3 +186,14 @@ async def delete_screenshot(session, tg_id, screenshot_id) -> bool:
         return True
     else:
         return False
+
+async def show_all_screenshots(session, tg_id) -> list:
+    res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
+    if not res.scalar():
+        return []
+
+    user_id = res.scalar().id
+    screenshots = await session.execute(select(Screenshot).filter_by(user_tg_id=user_id))
+    screenshots = screenshots.fetchall()
+    screenshots_list = [event[0] for event in screenshots]
+    return screenshots_list

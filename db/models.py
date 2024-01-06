@@ -1,17 +1,19 @@
-from sqlalchemy import Text  # variable length
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer,  # SmallInteger,
+from datetime import datetime
+
+from sqlalchemy import (DateTime, ForeignKey, Integer,  # SmallInteger,
                         String)
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, Mapped, mapped_column
 
 Base = declarative_base()
 
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, nullable=False, unique=True)
-    tg_username = Column(String(250), nullable=False)
-    tg_full_name = Column(String(250))
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(nullable=False, unique=True)
+    tg_username: Mapped[str] = mapped_column(String(250), nullable=False)
+    tg_full_name: Mapped[str] = mapped_column(String(250))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
         return {
@@ -21,13 +23,14 @@ class User(Base):
 
 class Event(Base):
     __tablename__ = "events"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    ev_datetime = Column(DateTime)
-    ev_title = Column(String(100))
-    ev_tags = Column(Text)
-    ev_text = Column(Text)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", backref="events")
+    ev_datetime: Mapped[datetime] = mapped_column(DateTime)
+    ev_title: Mapped[str] = mapped_column(String(100))
+    ev_tags: Mapped[str] = mapped_column()
+    ev_text: Mapped[str] = mapped_column(String())
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
         return {
@@ -37,12 +40,13 @@ class Event(Base):
 
 class Note(Base):
     __tablename__ = "notes"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    note_title = Column(Text)
-    note_text = Column(Text)
-    note_tags = Column(Text)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", backref="notes")
+    note_title: Mapped[str] = mapped_column(String())
+    note_text: Mapped[str] = mapped_column(String())
+    note_tags: Mapped[str] = mapped_column(String())
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
         return {
@@ -52,13 +56,14 @@ class Note(Base):
 
 class Setting(Base):
     __tablename__ = "settings"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    # user = relationship(User)
-    user_timezone = Column(String(20))  # Europe/Berlin etc...
-    ai_platform = Column(String(50))
-    ai_api_key = Column(String(100))
-    calendar_event_duration = Column(Integer)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", backref="settings")
+    user_timezone: Mapped[str] = mapped_column(String(20))  # Europe/Berlin etc...
+    ai_platform: Mapped[str] = mapped_column(String(50))
+    ai_api_key: Mapped[str] = mapped_column(String(100))
+    calendar_event_duration: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
         return {
@@ -68,10 +73,20 @@ class Setting(Base):
 
 class Screenshot(Base):
     __tablename__ = "screenshots"
-    id = Column(Integer, primary_key=True, unique=True, autoincrement=True)
-    user_tg_id = Column(Integer, ForeignKey("users.id"))
-    file_id = Column(String(100))
-    hashtags = Column(Text)
-    caption = Column(Text)
-    ocr_text = Column(Text)
-    created = Column(DateTime)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", backref="screenshots")
+    file_id: Mapped[str] = mapped_column(String(100))
+    hashtags: Mapped[str] = mapped_column(String())
+    caption: Mapped[str] = mapped_column(String())
+    ocr_text: Mapped[str] = mapped_column(String())
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
+
+
+class Session(Base):
+    __tablename__ = "sessions"
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
+    user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    user = relationship("User", backref="sessions")
+    session_id: Mapped[str] = mapped_column(String(100))  # uuid4 hash for verification
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())

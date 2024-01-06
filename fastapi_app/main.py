@@ -1,12 +1,8 @@
-import json
-from pathlib import Path
-
-from fastapi import FastAPI, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
-from .config import STATIC_PATH, templates
+from fastapi_app.conf.config import STATIC_PATH, templates
 from .routers import events, login, notes
 
 app = FastAPI()

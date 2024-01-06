@@ -1,21 +1,22 @@
-from pathlib import Path
 from urllib.parse import parse_qs, unquote
 
-from fastapi import APIRouter, HTTPException, Form
+from fastapi import APIRouter, Form
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 import starlette.status as status
 
-router = APIRouter()
-from fastapi_app.config import templates
+from fastapi_app.conf.config import templates
+
+router = APIRouter(prefix="/login", tags=["login"])
 
 
-@router.get("/login-tg", response_class=HTMLResponse)
+
+@router.get("/tg", response_class=HTMLResponse)
 async def login_tg_get(request: Request):
     return templates.TemplateResponse("login-tg.html", {"request": request})
 
 
-@router.post("/login-tg", response_class=HTMLResponse)
+@router.post("/tg", response_class=HTMLResponse)
 async def login_tg_post(request: Request):
     try:
         data = await request.json()
@@ -25,7 +26,7 @@ async def login_tg_post(request: Request):
     # return RedirectResponse(url="login")
 
 
-@router.get("/login", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 

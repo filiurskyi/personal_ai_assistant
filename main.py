@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
 
 from bot.handlers.user_commands import router
 from bot.middlewares.db import DbSessionMiddleware
-
+from db.conf import DB_URI
 
 async def scheduler():
     while True:
@@ -24,7 +24,6 @@ async def main() -> None:
     load_dotenv()
 
     TOKEN = getenv("BOT_TOKEN")
-    DB_URI = "sqlite+aiosqlite:///database.db/"
 
     engine = create_async_engine(DB_URI, echo=False)
     sessionmaker = async_sessionmaker(

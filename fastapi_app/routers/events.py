@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
                                     create_async_engine)
 
-from bot.db_tools.database import show_all_events, show_all_notes
-from fastapi_app.config import DB_URI, templates
+from bot.db_tools.database import show_all_events
+from fastapi_app.conf.config import DB_URI, templates
 
-router = APIRouter()
+router = APIRouter(prefix="/events", tags=["events"])
 
 
-@router.get("/events", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def list_events(request: Request):
     engine = create_async_engine(DB_URI, echo=False)
     sessionmaker = async_sessionmaker(
