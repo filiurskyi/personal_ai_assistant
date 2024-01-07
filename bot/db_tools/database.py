@@ -23,6 +23,7 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
             user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
         )
         session.add(user)
+        await session.commit()
         settings = Setting(
             user_tg_id=tg_id,
             user_timezone="Europe/Berlin",
