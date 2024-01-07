@@ -77,9 +77,9 @@ class Screenshot(Base):
     user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     user = relationship("User", backref="screenshots")
     file_id: Mapped[str] = mapped_column(String(100))
-    hashtags: Mapped[str] = mapped_column(String())
-    caption: Mapped[str] = mapped_column(String())
-    ocr_text: Mapped[str] = mapped_column(String())
+    hashtags: Mapped[str] = mapped_column(String(), nullable=True)
+    caption: Mapped[str] = mapped_column(String(), nullable=True)
+    ocr_text: Mapped[str] = mapped_column(String(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
 
