@@ -2,9 +2,11 @@ from datetime import datetime
 
 from sqlalchemy import (DateTime, ForeignKey, Integer,  # SmallInteger,
                         String)
-from sqlalchemy.orm import declarative_base, relationship, Mapped, mapped_column
+from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
@@ -28,7 +30,7 @@ class Event(Base):
     user = relationship("User", backref="events")
     ev_datetime: Mapped[datetime] = mapped_column(DateTime)
     ev_title: Mapped[str] = mapped_column(String(100))
-    ev_tags: Mapped[str] = mapped_column()
+    ev_tags: Mapped[str] = mapped_column(String())
     ev_text: Mapped[str] = mapped_column(String())
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 

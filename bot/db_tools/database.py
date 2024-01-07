@@ -145,7 +145,7 @@ async def show_all_notes(session, tg_id) -> list:
     return notes_list
 
 
-async def show_one_event(session, event_id):
+async def show_one_event(session, event_id: int):
     events = await session.execute(select(Event).filter_by(id=event_id))
     return events.scalar()
 
