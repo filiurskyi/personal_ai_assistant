@@ -218,6 +218,7 @@ async def delete_screenshot(session, tg_id: int, screenshot_id: str) -> bool:
     else:
         return False
 
+
 async def show_all_screenshots(session, tg_id) -> list:
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     if not res.scalar():

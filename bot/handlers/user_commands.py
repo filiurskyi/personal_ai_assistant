@@ -331,6 +331,12 @@ async def del_all_notes_handler(message: Message, state: FSMContext, session) ->
     )
 
 
+@router.message(Command("chat_id"))
+async def get_chat_id_handler(message: Message, state: FSMContext, session):
+    print(message.chat.id)
+    await message.answer(str(message.chat.id))
+
+
 @router.message(F.text)
 async def show_all_events_handler(
     message: Message, state: FSMContext, bot: Bot, session: AsyncSession
@@ -338,3 +344,5 @@ async def show_all_events_handler(
     keyboard = await kb.keyboard_selector(state)
     answer = "Got message:\n" + message.text + "\n\nDoes nothing.."
     await message.answer(answer, reply_markup=keyboard)
+
+

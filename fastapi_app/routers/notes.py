@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.requests import Request
 from fastapi.responses import HTMLResponse
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
@@ -6,18 +6,13 @@ from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
 
 from bot.db_tools.database import show_all_notes
 from fastapi_app.conf.config import DB_URI, templates
-
+from db.conf import get_db
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
 @router.get("/", response_class=HTMLResponse)
-async def get_notes(request: Request):
-    engine = create_async_engine(DB_URI, echo=False)
-    sessionmaker = async_sessionmaker(
-        engine, expire_on_commit=False, class_=AsyncSession
-    )
-    async with sessionmaker() as session:
-        notes = await show_all_notes(session, 306067192)
+async def get_notes(request: Request, db: AsyncSession = Depends(get_db)):
+    notes = await show_all_notes(db, 306067192)
     return templates.TemplateResponse(
         "notes.html", {"request": request, "notes": notes}
     )

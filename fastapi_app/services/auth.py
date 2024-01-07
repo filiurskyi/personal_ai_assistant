@@ -1,0 +1,6 @@
+async def login_check(user_id: str, hash_: str) -> bool:
+    ...
+
+
+async def login(user_id: str, hash_: str) -> None:
+    ...
