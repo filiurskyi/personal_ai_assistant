@@ -22,6 +22,7 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
         user = User(
             user_tg_id=tg_id, tg_username=tg_username, tg_full_name=tg_full_name
         )
+        session.add(user)
         settings = Setting(
             user_tg_id=tg_id,
             user_timezone="Europe/Berlin",
@@ -29,7 +30,6 @@ async def add_user(session, tg_id, tg_username, tg_full_name) -> None:
             ai_api_key=OPENAI_API_KEY,
             calendar_event_duration=30,
         )
-        session.add(user)
         session.add(settings)
         await session.commit()
 
