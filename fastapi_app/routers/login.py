@@ -22,7 +22,7 @@ async def login_tg_post(request: Request):
         data = await request.json()
         print(" get 54325345", parse_qs(unquote(data.get("initData"))))
     except Exception as e:
-        print("Exception in /login-tg", e)
+        print("Exception in /login/tg", e)
     # return RedirectResponse(url="login")
 
 

@@ -22,8 +22,8 @@
         var initDataDisplay = document.getElementById('initDataDisplay');
         initDataDisplay.innerText = initData === null ? '' : initData;
 
-        // Send POST request to /login-tg with initData
-        fetch('/login-tg', {
+        // Send POST request to /login/tg with initData
+        fetch('/login/tg', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
