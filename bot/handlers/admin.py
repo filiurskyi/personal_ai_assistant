@@ -44,7 +44,7 @@ async def command_state_handler(message: Message, state: FSMContext) -> None:
 async def command_web_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     await message.answer(
-        "Replying with web link: https://t.me/personalassistant_ai_test_bot/dashboard",
+        "Replying with web link: https://t.me/personalassistant_ai_bot/dashboard",
         reply_markup=keyboard,
     )
     
