@@ -57,10 +57,12 @@ async def get_user_tz(session, tg_id):
     # get user_id by tg_id
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
+    print(f"{user_id}")
 
     user_default_tz = await session.execute(
         select(Setting.user_timezone).filter_by(user_tg_id=user_id)
     )
+    print(user_default_tz.fetchone())
     return user_default_tz.fetchone()[0]
 
 

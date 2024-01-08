@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile, Message
 from aiogram.utils.markdown import hbold
+from aiogram.utils.chat_action import ChatActionSender
 from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,9 +52,11 @@ async def cancel_adding_note_handler(
 
 
 @router.message(States.adding_note_json)  # user message must be json
-async def add_new_note_a_handler(message: Message, state: FSMContext, session) -> None:
-    gpt_answer = gpt.text_to_text(message.text, "create_new_note")
-    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+async def add_new_note_a_handler(message: Message, state: FSMContext, session, bot: Bot) -> None:
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+    
+        gpt_answer = gpt.text_to_text(message.text, "create_new_note")
+        answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
+        await state.clear()
+        keyboard = await kb.keyboard_selector(state)
+        await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)

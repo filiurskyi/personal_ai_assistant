@@ -28,7 +28,7 @@ router = Router()
 
 @router.message(States.adding_event_json, F.text == "Cancel")
 async def cancel_adding_event_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
+        message: Message, state: FSMContext, bot: Bot, session: AsyncSession
 ) -> None:
     await state.clear()
     keyboard = await kb.keyboard_selector(state)
@@ -38,11 +38,10 @@ async def cancel_adding_event_handler(
 
 @router.message(States.adding_event_json, F.voice)
 async def voice_messages_add_event_state_handler(
-    message: Message, state: FSMContext, bot, session
+        message: Message, state: FSMContext, bot, session
 ) -> None:
     print("lgkdgdf")
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-
         keyboard = await kb.keyboard_selector(state)
         await message.answer(
             "I am accepting only text in this mode. To use voice input press Cancel.",
@@ -52,9 +51,10 @@ async def voice_messages_add_event_state_handler(
 
 
 @router.message(States.adding_event_json)  # user message must be json
-async def add_new_event_a_handler(message: Message, state: FSMContext, session) -> None:
-    gpt_answer = gpt.text_to_text(message.text, "create_new_event")
-    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+async def add_new_event_a_handler(message: Message, state: FSMContext, session, bot: Bot) -> None:
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        gpt_answer = gpt.text_to_text(message.text, "create_new_event")
+        answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
+        await state.clear()
+        keyboard = await kb.keyboard_selector(state)
+        await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
