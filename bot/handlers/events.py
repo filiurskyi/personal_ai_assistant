@@ -51,6 +51,8 @@ async def voice_messages_add_event_state_handler(
 @router.message(States.adding_event_json)  # user message must be json
 async def add_new_event_a_handler(message: Message, state: FSMContext, session, bot: Bot) -> None:
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        keyboard = await kb.keyboard_selector(state)
+
         gpt_answer = gpt.text_to_text(message.text, "create_new_event")
         answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
         await state.clear()
