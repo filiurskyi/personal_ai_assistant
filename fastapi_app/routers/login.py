@@ -39,9 +39,9 @@ async def login_tg_post(request: Request):
         ...
     else:
         await auth.login(user_id, hash_)
-        await bot.send_message(user_id, text=f"Helllo {user_first_name}\n\n\n{parsed_data}")
-    logging.info((user_id, user_username, user_first_name, user_last_name, user_language_code))
-    logging.info((chat_instance, chat_type, auth_date, hash_))
+        await bot.send_message(user_id, text=f"Helllo {user_first_name}\n\n\nYou logged in!")
+    # logging.info((user_id, user_username, user_first_name, user_last_name, user_language_code))
+    # logging.info((chat_instance, chat_type, auth_date, hash_))
     # except Exception as e:
     #     print("Exception in /login/tg", e)
     # return RedirectResponse(url="login")
