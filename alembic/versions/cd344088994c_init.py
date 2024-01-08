@@ -1,8 +1,8 @@
-"""init postgres
+"""init
 
-Revision ID: b069fd8404ab
+Revision ID: cd344088994c
 Revises: 
-Create Date: 2024-01-07 00:24:32.558840
+Create Date: 2024-01-08 10:39:33.913883
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'b069fd8404ab'
+revision: str = 'cd344088994c'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -57,9 +57,9 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_tg_id', sa.Integer(), nullable=False),
     sa.Column('file_id', sa.String(length=100), nullable=False),
-    sa.Column('hashtags', sa.String(), nullable=False),
-    sa.Column('caption', sa.String(), nullable=False),
-    sa.Column('ocr_text', sa.String(), nullable=False),
+    sa.Column('hashtags', sa.String(), nullable=True),
+    sa.Column('caption', sa.String(), nullable=True),
+    sa.Column('ocr_text', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_tg_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
