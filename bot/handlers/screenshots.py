@@ -57,7 +57,6 @@ async def cancel_finding_screenshot_handler(
     )
 
 
-
 @router.message(States.find_screenshot)
 async def find_screenshot_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)

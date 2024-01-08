@@ -8,6 +8,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import FSInputFile, Message
 from aiogram.utils.markdown import hbold
+from aiogram.utils.chat_action import ChatActionSender
 from PIL import Image
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,32 +26,42 @@ from bot.logic.utils import ocr_image
 router = Router()
 
 
-@router.message(States.adding_event_json, F.text == "Cancel")
-async def cancel_adding_event_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    await state.clear()
+# ---------------
+# commands
+# ---------------
+
+
+@router.message(Command("start"))
+async def command_start_handler(message: Message, state: FSMContext, session) -> None:
+    """
+    This handler receives messages with `/start` command
+    """
     keyboard = await kb.keyboard_selector(state)
-    answer = "Cancelled adding new event.\n\nI am your personal assistant."
-    await message.answer(answer, reply_markup=keyboard)
+    if not await db.old_user_check(session, message.from_user.id):
+        await message.answer(
+            f"Welcome back, {hbold(message.from_user.full_name)}!\nServer has been updated",
+            reply_markup=keyboard,
+        )
+    else:
+        await db.add_user(
+            session,
+            message.from_user.id,
+            message.from_user.username,
+            message.from_user.full_name,
+        )
+        await message.answer(
+            f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
+        )
 
 
-
-
-@router.message(States.adding_note_json, F.text == "Cancel")
-async def cancel_adding_note_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    await state.clear()
+@router.message(Command("help"))
+async def command_help_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
-    answer = (
-        "Cancelled adding new note.\n\nI am your personal assistant, i can create events and notes from your "
-        "voice message, or you can manually add events or notes by buttons Write.. below your screen."
+    msg = (
+        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\nFor Apple users: https://routinehub.co/shortcut/7005/\n\n/del_all_events - delete "
+        "all events\n\n/del_all_notes - delete all notes\n\n\n\n/state - for debugging"
     )
-    await message.answer(answer, reply_markup=keyboard)
-
-
-
+    await message.answer(msg, reply_markup=keyboard)
 
 
 @router.message(Command("get_ics"))
@@ -66,15 +77,26 @@ async def command_get_handler(message: Message, state: FSMContext, session) -> N
     os.remove(file_path)
 
 
-@router.message(Command("help"))
-async def command_help_handler(message: Message, state: FSMContext) -> None:
+@router.message(Command("del_all_events"))
+async def del_all_events_handler(message: Message, state: FSMContext, session) -> None:
     keyboard = await kb.keyboard_selector(state)
-    msg = (
-        "/start - log in\n/help - display help message\n\n/get_ics - download .ics calendar\nFor Apple users: https://routinehub.co/shortcut/7005/\n\n/del_all_events - delete "
-        "all events\n\n/del_all_notes - delete all notes\n\n\n\n/state - for debugging"
+    await db.delete_all_events(session, message.from_user.id)
+    await message.answer(
+        "<i>All events deleted.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
     )
-    await message.answer(msg, reply_markup=keyboard)
 
+
+@router.message(Command("del_all_notes"))
+async def del_all_notes_handler(message: Message, state: FSMContext, session) -> None:
+    keyboard = await kb.keyboard_selector(state)
+    await db.del_all_notes(session, message.from_user.id)
+    await message.answer(
+        "<i>All events deleted.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
+    )
+
+# ---------------
+# Text
+# ---------------
 
 @router.message(F.text == "Write new event")
 async def add_new_event_handler(message: Message, state: FSMContext) -> None:
@@ -88,28 +110,6 @@ async def add_new_note_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(States.adding_note_json)
     keyboard = await kb.keyboard_selector(state)
     await message.answer("Enter your note description by text:", reply_markup=keyboard)
-
-
-
-@router.message(F.photo)
-async def get_photo_handler(message: Message, state: FSMContext, session, bot) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    file_id = await bot.get_file(message.photo[-1].file_id)
-    file_path = f"./screenshots/{uuid.uuid4().int}.jpg"
-    await bot.download_file(file_id.file_path, file_path)
-    image = Image.open(file_path)
-    caption = message.caption
-    filtered_text = ocr_image(image)
-    screenshot_id = await db.add_new_screenshot(
-        session, message.from_user.id, file_id.file_id, caption, filtered_text
-    )
-    await message.answer(
-        f"<i>[{screenshot_id}] Photo received with name: {file_path}</i>\nCaption is: {caption}\nText recognized:\n\n{filtered_text}",
-        reply_markup=keyboard,
-        parse_mode=ParseMode.HTML,
-    )
-    image.close()
-    os.remove(file_path)
 
 
 @router.message(F.text == "Show all events")
@@ -154,73 +154,47 @@ async def show_all_notes_handler(message: Message, state: FSMContext, session) -
             "<i>No notes found.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
         )
 
+# ---------------
+# media
+# ---------------
+        
+@router.message(F.photo)
+async def get_photo_handler(message: Message, state: FSMContext, session, bot) -> None:
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        
+        keyboard = await kb.keyboard_selector(state)
+        file_id = await bot.get_file(message.photo[-1].file_id)
+        file_path = f"./screenshots/{uuid.uuid4().int}.jpg"
+        await bot.download_file(file_id.file_path, file_path)
+        image = Image.open(file_path)
+        caption = message.caption
+        filtered_text = ocr_image(image)
+        screenshot_id = await db.add_new_screenshot(
+            session, message.from_user.id, file_id.file_id, caption, filtered_text
+        )
+        await message.answer(
+            f"<i>[{screenshot_id}] Photo received with name: {file_path}</i>\nCaption is: {caption}\nText recognized:\n\n{filtered_text}",
+            reply_markup=keyboard,
+            parse_mode=ParseMode.HTML,
+        )
+        image.close()
+        os.remove(file_path)
+
 
 @router.message(F.voice)
 async def voice_messages_handler(
     message: Message, state: FSMContext, bot, session
 ) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer("Got you, pls w8...", reply_markup=keyboard)
-    file_id = await bot.get_file(message.voice.file_id)
-    file_path = f"./temp/{uuid.uuid4().int}.oga"
-    await bot.download_file(file_id.file_path, file_path)
-    audio = open(file_path, "rb")
-    transcript = gpt.voice_to_text(audio)
-    audio.close()
-    answer = await f.user_context_handler(transcript, message.from_user.id, session)
-    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-    os.remove(file_path)
-
-
-@router.message(Command("start"))
-async def command_start_handler(message: Message, state: FSMContext, session) -> None:
-    """
-    This handler receives messages with `/start` command
-    """
-    keyboard = await kb.keyboard_selector(state)
-    if not await db.old_user_check(session, message.from_user.id):
-        await message.answer(
-            f"Welcome back, {hbold(message.from_user.full_name)}!\nServer has been updated",
-            reply_markup=keyboard,
-        )
-    else:
-        await db.add_user(
-            session,
-            message.from_user.id,
-            message.from_user.username,
-            message.from_user.full_name,
-        )
-        await message.answer(
-            f"Hello, {hbold(message.from_user.full_name)}!", reply_markup=keyboard
-        )
-
-
-@router.message(Command("del_all_events"))
-async def del_all_events_handler(message: Message, state: FSMContext, session) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await db.delete_all_events(session, message.from_user.id)
-    await message.answer(
-        "<i>All events deleted.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
-    )
-
-
-@router.message(Command("del_all_notes"))
-async def del_all_notes_handler(message: Message, state: FSMContext, session) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await db.del_all_notes(session, message.from_user.id)
-    await message.answer(
-        "<i>All events deleted.</i>", reply_markup=keyboard, parse_mode=ParseMode.HTML
-    )
-
-
-
-
-@router.message(F.text)
-async def show_all_events_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    answer = "Got message:\n" + message.text + "\n\nDoes nothing.."
-    await message.answer(answer, reply_markup=keyboard)
-
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        keyboard = await kb.keyboard_selector(state)
+        # await message.answer("Got you, pls w8...", reply_markup=keyboard)
+        file_id = await bot.get_file(message.voice.file_id)
+        file_path = f"./temp/{uuid.uuid4().int}.oga"
+        await bot.download_file(file_id.file_path, file_path)
+        audio = open(file_path, "rb")
+        transcript = gpt.voice_to_text(audio)
+        audio.close()
+        answer = await f.user_context_handler(transcript, message.from_user.id, session)
+        await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+        os.remove(file_path)
 

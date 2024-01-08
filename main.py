@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
                                     create_async_engine)
 
-from bot.handlers.user_commands import router
+from bot.handlers import user_commands, admin, events, notes, screenshots, error
 from bot.middlewares.db import DbSessionMiddleware
 from db.conf import DB_URI
 
@@ -28,9 +28,10 @@ async def scheduler():
 
 
 async def run_uvicorn():
-    config = uvicorn.Config("fastapi_app.main:app", port=8000, log_level="info")
-    server = uvicorn.Server(config)
-    await server.serve()
+    ...
+    # config = uvicorn.Config("fastapi_app.main:app", port=8000, log_level="info")
+    # server = uvicorn.Server(config)
+    # await server.serve()
 
 
 async def main() -> None:
@@ -41,7 +42,12 @@ async def main() -> None:
 
     dp = Dispatcher()
     dp.update.middleware(DbSessionMiddleware(session_pool=sessionmaker))
-    dp.include_routers(router)
+    dp.include_routers(user_commands.router) #  must be at begin
+    dp.include_routers(admin.router)
+    dp.include_routers(events.router)
+    dp.include_routers(notes.router)
+    dp.include_routers(screenshots.router)
+    dp.include_routers(error.router) #  must be at the end
 
     tasks = [dp.start_polling(bot), scheduler(), run_uvicorn()]
     await asyncio.gather(*tasks)

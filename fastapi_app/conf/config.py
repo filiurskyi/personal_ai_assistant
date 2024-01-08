@@ -15,5 +15,5 @@ router = APIRouter()
 
 load_dotenv(dotenv_path=str(BASE_DIR.parent.parent / ".env"))
 OPENAI_API_KEY=getenv("OPENAI_API_KEY")
-# DB_URI = "sqlite+aiosqlite:///database.db/"
-DB_URI = f"postgresql+asyncpg://{getenv('PG_USER')}:{getenv('PG_PWD')}@{getenv('PG_HOST')}:{getenv('PG_PORT')}/{getenv('PG_DB_NAME')}"
+DB_URI = "sqlite+aiosqlite:///database.db/"
+# DB_URI = f"postgresql+asyncpg://{getenv('PG_USER')}:{getenv('PG_PWD')}@{getenv('PG_HOST')}:{getenv('PG_PORT')}/{getenv('PG_DB_NAME')}"
