@@ -53,7 +53,7 @@ async def get_user_default_event_duration(session, tg_id):
     return user_id
 
 
-async def get_user_tz(session, tg_id):
+async def get_user_tz(session, tg_id) -> str | None:
     # get user_id by tg_id
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
@@ -62,7 +62,6 @@ async def get_user_tz(session, tg_id):
     user_default_tz = await session.execute(
         select(Setting.user_timezone).filter_by(user_tg_id=user_id)
     )
-    print(user_default_tz.fetchone())
     return user_default_tz.fetchone()[0]
 
 
@@ -75,7 +74,10 @@ async def add_event(session, tg_id, event_dict: dict) -> None:
     user_tz = await get_user_tz(session, tg_id)
     date_time_format = "DD.MM.YYYY HH:mm"
     date_time_str = event_dict.get("ev_datetime")
-    arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_tz).to("UTC")
+    if user_tz is not None:
+        arrow_dt = arrow.get(date_time_str, date_time_format, tzinfo=user_tz).to("UTC")
+    else:
+        return None
 
     # add new event do db
     event = Event(

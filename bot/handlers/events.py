@@ -40,14 +40,12 @@ async def cancel_adding_event_handler(
 async def voice_messages_add_event_state_handler(
         message: Message, state: FSMContext, bot, session
 ) -> None:
-    print("lgkdgdf")
-    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
-        keyboard = await kb.keyboard_selector(state)
-        await message.answer(
-            "I am accepting only text in this mode. To use voice input press Cancel.",
-            reply_markup=keyboard,
-            parse_mode=ParseMode.HTML,
-        )
+    keyboard = await kb.keyboard_selector(state)
+    await message.answer(
+        "I am accepting only text in this mode. To use voice input press Cancel.",
+        reply_markup=keyboard,
+        parse_mode=ParseMode.HTML,
+    )
 
 
 @router.message(States.adding_event_json)  # user message must be json
