@@ -63,7 +63,7 @@ def voice_to_text(audio, contexts=USER_CONTEXTS) -> str:
             },
             {
                 "role": "user",
-                "content": transcript.text,
+                "content": r"{}".format(transcript.text),
             },
         ],
     )
@@ -105,7 +105,7 @@ def text_to_text(user_message: str, contexts=USER_CONTEXTS) -> str:
             },
             {
                 "role": "user",
-                "content": user_message,
+                "content": r"{}".format(user_message),
             },
         ],
     )
