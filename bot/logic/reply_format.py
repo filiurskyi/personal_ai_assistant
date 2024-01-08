@@ -8,7 +8,7 @@ from bot.db_tools import database as db
 
 async def user_context_handler(user_input: str, user_id, session):
     try:
-        data = json.loads(user_input.replace("'", '"'))
+        data = json.loads(user_input.encode("utf-8"))
     except json.JSONDecodeError:
         return f"Unable to process your request.\nPlease give me instructions more precisely. Your response is:\n\n{user_input}"
     if data.get("user_context", None) == "create_new_event":

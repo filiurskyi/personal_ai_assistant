@@ -29,9 +29,9 @@ class Event(Base):
     user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     user = relationship("User", backref="events")
     ev_datetime: Mapped[datetime] = mapped_column(DateTime)
-    ev_title: Mapped[str] = mapped_column(String(100))
-    ev_tags: Mapped[str] = mapped_column(String())
-    ev_text: Mapped[str] = mapped_column(String())
+    ev_title: Mapped[str] = mapped_column(String(100), nullable=True)
+    ev_tags: Mapped[str] = mapped_column(String(), nullable=True)
+    ev_text: Mapped[str] = mapped_column(String(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
@@ -45,9 +45,9 @@ class Note(Base):
     id: Mapped[int] = mapped_column(primary_key=True, unique=True, autoincrement=True)
     user_tg_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
     user = relationship("User", backref="notes")
-    note_title: Mapped[str] = mapped_column(String())
-    note_text: Mapped[str] = mapped_column(String())
-    note_tags: Mapped[str] = mapped_column(String())
+    note_title: Mapped[str] = mapped_column(String(), nullable=True)
+    note_text: Mapped[str] = mapped_column(String(), nullable=True)
+    note_tags: Mapped[str] = mapped_column(String(), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now())
 
     def as_dict(self):
