@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from typing import Union
 
 import arrow
 from sqlalchemy import and_, or_, select
@@ -53,7 +54,7 @@ async def get_user_default_event_duration(session, tg_id):
     return user_id
 
 
-async def get_user_tz(session, tg_id) -> str | None:
+async def get_user_tz(session, tg_id) -> Union[str, None]:
     # get user_id by tg_id
     res = await session.execute(select(User).filter_by(user_tg_id=tg_id))
     user_id = res.scalar().id
