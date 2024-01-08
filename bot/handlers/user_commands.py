@@ -35,55 +35,6 @@ async def cancel_adding_event_handler(
     await message.answer(answer, reply_markup=keyboard)
 
 
-@router.message(States.find_screenshot, F.text == "Cancel")
-async def cancel_finding_screenshot_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    answer = "Cancelled searching for screenshots.\n\nI am your personal assistant."
-    await message.answer(answer, reply_markup=keyboard)
-
-
-@router.message(States.delete_screenshot, F.text == "Cancel")
-async def cancel_finding_screenshot_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    answer = "Cancelled deleting screenshots.\n\nI am your personal assistant."
-    await message.answer(answer, reply_markup=keyboard)
-
-
-@router.message(States.find_screenshot, F.text == "Delete screenshot by id")
-async def cancel_finding_screenshot_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await state.set_state(States.delete_screenshot)
-    await message.answer(
-        "Now send my id of screenshot you want to delete. It is in brackets like this: [id]",
-        reply_markup=keyboard,
-    )
-
-
-@router.message(States.delete_screenshot)
-async def cancel_finding_screenshot_handler(
-    message: Message, state: FSMContext, bot: Bot, session: AsyncSession
-) -> None:
-    await state.set_state(States.find_screenshot)
-    keyboard = await kb.keyboard_selector(state)
-    delete_successful = await db.delete_screenshot(
-        session, message.from_user.id, message.text
-    )
-    if delete_successful:
-        await message.answer(
-            f"screenshot with id[{message.text}] deleted", reply_markup=keyboard
-        )
-    else:
-        await message.answer(
-            f"screenshot with id[{message.text}] not found", reply_markup=keyboard
-        )
 
 
 @router.message(States.adding_note_json, F.text == "Cancel")
@@ -99,20 +50,7 @@ async def cancel_adding_note_handler(
     await message.answer(answer, reply_markup=keyboard)
 
 
-@router.message(Command("state"))
-async def command_state_handler(message: Message, state: FSMContext) -> None:
-    stt = await state.get_state()
-    msg = f"MSG from {message.from_user.id}\nCurrent state is : " + str(stt)
-    logging.info(msg)
 
-
-@router.message(Command("web"))
-async def command_web_handler(message: Message, state: FSMContext) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(
-        "Replying with web link: https://t.me/personalassistant_ai_test_bot/dashboard",
-        reply_markup=keyboard,
-    )
 
 
 @router.message(Command("get_ics"))
@@ -151,62 +89,6 @@ async def add_new_note_handler(message: Message, state: FSMContext) -> None:
     keyboard = await kb.keyboard_selector(state)
     await message.answer("Enter your note description by text:", reply_markup=keyboard)
 
-
-@router.message(States.adding_event_json, F.voice)
-async def voice_messages_add_event_state_handler(
-    message: Message, state: FSMContext, bot, session
-) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(
-        "I am accepting only text in this mode. To use voice input press Cancel.",
-        reply_markup=keyboard,
-        parse_mode=ParseMode.HTML,
-    )
-
-
-@router.message(States.adding_note_json, F.voice)
-async def voice_messages_add_note_state_handler(
-    message: Message, state: FSMContext, bot, session
-) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(
-        "I am accepting only text in this mode. To use voice input press Cancel.",
-        reply_markup=keyboard,
-        parse_mode=ParseMode.HTML,
-    )
-
-
-@router.message(States.adding_event_json)  # user message must be json
-async def add_new_event_a_handler(message: Message, state: FSMContext, session) -> None:
-    gpt_answer = gpt.text_to_text(message.text, "create_new_event")
-    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-
-
-@router.message(States.adding_note_json)  # user message must be json
-async def add_new_note_a_handler(message: Message, state: FSMContext, session) -> None:
-    gpt_answer = gpt.text_to_text(message.text, "create_new_note")
-    answer = await f.user_context_handler(gpt_answer, message.from_user.id, session)
-    await state.clear()
-    keyboard = await kb.keyboard_selector(state)
-    await message.answer(answer, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-
-
-@router.message(States.find_screenshot)
-async def find_screenshot_handler(message: Message, state: FSMContext, session) -> None:
-    keyboard = await kb.keyboard_selector(state)
-    result = await db.find_screenshot(session, message.from_user.id, message.text)
-    if len(result) != 0:
-        for res in result:
-            print(f"found photo with file_id == {res[0]=}")
-            await message.answer_photo(
-                res[1], caption=f"[{res[0]}]\nhere is your photo", reply_markup=keyboard
-            )
-            # await message.answer(result, reply_markup=keyboard)
-    else:
-        await message.answer("found nothing...", reply_markup=keyboard)
 
 
 @router.message(F.photo)
@@ -331,10 +213,6 @@ async def del_all_notes_handler(message: Message, state: FSMContext, session) ->
     )
 
 
-@router.message(Command("chat_id"))
-async def get_chat_id_handler(message: Message, state: FSMContext, session):
-    print(message.chat.id)
-    await message.answer(str(message.chat.id))
 
 
 @router.message(F.text)
